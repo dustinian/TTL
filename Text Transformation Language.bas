@@ -3,16 +3,16 @@
 '---------------------------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
-	'Author: Dustinian Camburides
+	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.0
-	'Updated: 7/28/2013
+	'Revision: 2.2
+	'Updated: 3/13/2015
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
 	'2. Run the TTL intepreter, identifying the script path, input path, and output path as command-line parameters.
 '---------------------------------------------------------------------------------------------------
-'SYNTAX
+'COMMAND SYNTAX
 	'Commands: Use the below commands to transform your input text into your output text.
 		'REPLACE "find" WITH "add"
 		'REPLACE ALL WITH "add" BETWEEN "precedant" AND "antecedant"
@@ -22,10 +22,36 @@
 	'Modules: Use the below command to include a seperate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
 '---------------------------------------------------------------------------------------------------
+'STRING SYNTAX
+	'CHR
+		'Use the "CHR()" operator to look for characters that you can't easily type into an ASCII TTL file.
+			'Example: Replace CHR(8) with CHR(9) 
+	'TOKENS
+		'Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable
+		'.________________._________.
+		'|     TOKEN      |   CHR   |
+		'|----------------+---------|
+		'| TAB            |       9 |
+		'| \T             |       9 |
+		'| NEWLINE        |      10 |
+		'| \N             |      10 |
+		'| CARRIAGERETURN |      13 |
+		'| \R             |      13 |
+		'| LINEBREAK      | 13 + 10 |
+		'| \R\N           | 13 + 10 |
+		'| QUOTE          |      34 |
+		''--------------------------'
+			'Example: Replace TAB with ", "
+	'CONCATENATION
+		'Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple substrings into a single string in a TTL command.
+			'Example: Replace "</P>" + NEWLINE + NEWLINE with "</P>" + NEWLINE
+'---------------------------------------------------------------------------------------------------
 'COMMAND-LINE PARAMETERS
 	'ttl.exe script_path.ttl input_path.txt output_path.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.2: Added "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
+	'2.1: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
 	'2.0: Fixed an infinite loop that occurs when the [add] sub-string contains the [find] sub-string, updated command-line parameter parsing.
 	'1.9: Fixed parsing errors for Replace_Subsequent$ and Replace_Between$ commands, updated Replace_Subsequent$ syntax.
 	'1.8: Migrated from QB64 (www.qb64.net) to FreeBASIC (www.freebasic.net).
@@ -41,14 +67,13 @@
 'PLANNED ENHNACEMENTS
 	'Major:
 		'Target Folder: The ability to target all the files in a folder and its subfolders (filtered by extension).
-		'Append: The ability to append text from another file to the beginning or end of the current file.
+		'Append/Prepend: The ability to append text from another file to the beginning or end of the current file.
 		'Replace All Once / Recursive: The ability to determine whether all instances of a query string are replaced once per initial location in a file... or over and over again until they no longer occur.
 		'Debug Logs: The ability to log transformations in progress at different levels of detail.
 		'Text User-Interface (TUI): A user interface assembled from ASCII characters (similar to the QB IDE).
 		'Graphical User-Interface (GUI): A windows-style user interface (buttons, menus, scroll bars, etc.).
 		'Syntax Definitons: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 	'Minor:
-		'Tokens: Constants For common "white space" characters (TAB, RETURN, etc.).
 		'Wildcards: Symbols For "wildcard" searches (*, #, etc.).
 '---------------------------------------------------------------------------------------------------
 'LIBRARIES
@@ -58,6 +83,7 @@
 '---------------------------------------------------------------------------------------------------
 'USER-DEFINED TYPES:
 	Type TTLCommand
+		Original as String * 255 'The original command as the user entered it.
 		Operation As String * 25 'The keyword For the operation to be performed.
 		Path As String * 255 'The path where an input file (include, append, etc.) may be found.
 		Find As String * 255 'The sub-string to be replaced by the "Add" sub-string.
@@ -76,6 +102,7 @@
 	Declare Sub Normalize_Commands (Words() As String)
 	Declare Sub Remove_Comments (Words() As String)
 	Declare Sub Transform_CHR (Command_Words() As String)
+	Declare Sub Transform_Tokens (Command_Words() As String)
 	Declare Sub Combine_Sub_Strings (Command_Words() As String)
 	Declare Sub Validate_Command (Words() As String)
 	Declare Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand)
@@ -96,6 +123,7 @@
 	Dim strOutputPath As String 'The path where TTL should put the finished text.
 	Dim udtCommands() As TTLCommand 'The dynamic array of [Commands] that will be assembled and executed.
 	Dim strInputText As String 'The input text the script will run against.
+	Dim strFiles() As String 'The files in the target folder.
 '---------------------------------------------------------------------------------------------------
 'MAIN PROCEDURE:
 	'INITIALIZE:
@@ -108,15 +136,15 @@
 				'Parse the input path out of the command-line parameters:
 					strInputPath = Command$(2)
 				'Parse the output path out of the command-line parameters:
-					strOutputPath=Command$(3)
+					strOutputPath = Command$(3)
 				'If the command-line arguments are not blank:
 					If strScriptPath <> "" And strInputPath <> "" And strOutputPath <> "" Then
-						'Load the input text:
-							Print "LOADING FILE>>>"
-							strInputText = Input_File(strInputPath)
 						'Parse the script:
-							Print "PARSING FILE>>>"
+							Print "LOADING/PARSING SCRIPT>>>"
 							Parse_Script(udtCommands(), strScriptPath)
+						'Load the input text:
+							Print "LOADING INPUT FILE>>>"
+							strInputText = Input_File(strInputPath)
 						'Execute the script:
 							Print "EXECUTING SCRIPT>>>"
 							strInputText = Execute_Script(udtCommands(), strInputText)
@@ -233,6 +261,7 @@ Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
 							ReDim Preserve Commands(UBound(Commands) + 1) As TTLCommand
 						'Add the command to the last position in the array:
 							Commands(UBound(Commands)) = udtTemporaryCommand
+							Commands(UBOUND(Commands)).Original = Text_Command
 					End If
 			End If
 End Sub
@@ -350,6 +379,8 @@ Sub Intepret_Command (Temporary_Command As TTLCommand, Command_Words() As String
 					Remove_Blank_Words(Command_Words())
 				'Transform CHR commands to their character:
 					Transform_CHR(Command_Words())
+				'Transform Tokens to their character:
+					Transform_Tokens (Command_Words())
 				'Combine all sub-strings with a "+" or a "&" in between:
 					Combine_Sub_Strings(Command_Words())
 				'Remove blank words:
@@ -465,6 +496,53 @@ Sub Transform_CHR (Command_Words() As String)
 										End
 									End If
 							End If
+					End If
+		'Next [word]...
+			Next intWord
+End Sub
+
+Sub Transform_Tokens (Command_Words() As String)
+	'SUMMARY:
+		'[Transform_Tokens] .
+	'INPUT:
+		'Command_Words():
+	'VARIABLES:
+		Dim intWord As Integer 'The [Word] within the [Command Words] array.
+	'PROCESSING:
+		'For each [word]...
+			For intWord = LBound(Command_Words) TO UBound(Command_Words)
+				'If the word begins and ends in something other than quotes...
+					If Left$(Command_Words(intWord), 1) <> Chr$(34) And Right$(Command_Words(intWord), 1) <> Chr$(34) Then
+						'If the command is a wild card...
+							Select Case Command_Words(intWord)
+								Case "TAB"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(9) + Chr$(34)
+								Case "\T"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(9) + Chr$(34)
+								Case "LINEBREAK"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(10) + Chr$(34)
+								Case "\R\N"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(10) + Chr$(34)
+								Case "NEWLINE"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(10) + Chr$(34)
+								Case "\N"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(10) + Chr$(34)
+								Case "CARRIAGERETURN"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(34)
+								Case "\R"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(34)
+								Case "QUOTE"
+									'Replace the word with the appropriate ASCII character:
+										Command_Words(intWord) = Chr$(34) + Chr$(34) + Chr$(34)
+							End Select
 					End If
 		'Next [word]...
 			Next intWord
@@ -651,10 +729,10 @@ End Function
 
 Sub Add_Commands (Main_Commands() As TTLCommand, New_Commands() As TTLCommand, Line_Number As Integer)
 	'SUMMARY:
-		'[Add_Commands] .
+		'[Add_Commands] Adds newly-interpreted TTL Commands to the main array of TTL commands.
 	'INPUT:
-		'Main_Commands():
-		'New_Commands():
+		'Main_Commands(): The main array of TTL commands.
+		'New_Commands(): The new TTL commands to be added.
 		'Line_Number:
 	'VARIABLES:
 		Dim intCommand As Integer 'The address of the [Command] within the [Commands] array.
@@ -679,15 +757,17 @@ End Sub
 '---------------------------------------------------------------------------------------------------
 Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 	'SUMMARY:
-		'[Execute_Script] .
+		'[Execute_Script] runs the array of TTL [Commands] on the [Text].
 	'INPUT:
-		'Commands(): 
+		'Commands(): An array of TTL script commands to be executed.
 		'Text: The input string; the text that's being manipulated.
 	'VARIABLES:
 		Dim intCommand As Integer 'The address of the current [Command] within the [Commands] array.
 	'PROCESSING:
 		'For each [command]...
 			For intCommand = LBound(Commands) TO UBound(Commands)
+				'Output what you're doing:
+					Print, "Running: " + Commands(intCommand).Original
 				'Execute the command:
 					Execute_Command(Commands(intCommand), Text)
 		'Next [command]...
@@ -698,9 +778,9 @@ End Function
 
 Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 	'SUMMARY:
-		'[Execute_Command] .
+		'[Execute_Command] translates a scripted TTL command to a funciton call to [String Manipulation.bas].
 	'INPUT:
-		'Command: 
+		'TTLCommand: The TTL script command to be executed.
 		'Text: The input string; the text that's being manipulated.
 	'PROCESSING:
 		Select Case LTrim$(RTrim$(TTLCommand.Operation))
@@ -718,12 +798,19 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 End Sub
 
 Function Interior_Characters(ByVal Text As String) As String
-	Dim strText As String
-	strText = LTrim$(RTrim$(Text))
-	If Left$(strText, 1) = Chr$(34) And Right$(strText, 1) = Chr$(34) Then
-		strText = Mid$(strText, 2, Len(strText) - 2)
-	Else
-		strText = Text
-	End If
-	Interior_Characters = strText
+	'SUMMARY:
+		'[Interior_Characters] returns the characters between the quotation marks in the sub-string.
+	'INPUT:
+		'Text: The input string; the text that's being manipulated.
+	'VARIABLES:
+		Dim strText As String
+	'PROCESSING:
+		strText = LTrim$(RTrim$(Text))
+		If Left$(strText, 1) = Chr$(34) And Right$(strText, 1) = Chr$(34) Then
+			strText = Mid$(strText, 2, Len(strText) - 2)
+		Else
+			strText = Text
+		End If
+	'OUTPUT:
+		Interior_Characters = strText
 End Function

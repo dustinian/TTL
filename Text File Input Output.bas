@@ -3,12 +3,14 @@
 '---------------------------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: A library of custom subroutines and functions to load text to/from a file.
-	'Author: Dustinian Camburides
+	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 1.2
-	'Updated: 4/15/2013
+	'Revision: 1.3
+	'Updated: 12/5/2014
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'1.3: Added:
+				'[Folder_Contents] function to return all files in a folder.
 	'1.2: Updated:
 				'Migrated from QB64 (www.qb64.net) to FreeBASIC (www.freebasic.net).
 	'1.1: Added:
@@ -69,7 +71,7 @@ Function Input_File (Path As String) As String
 		Input_File = strFileText
 End Function
 
-SUB Output_File (Text As String, Path As String)
+Sub Output_File (Text As String, Path As String)
 	'SUMMARY:
 		'[Output_File] outputs the [Text} into a file at the [Path] location.
 	'INPUT:
@@ -85,4 +87,39 @@ SUB Output_File (Text As String, Path As String)
 			Print #intFileNumber, Text
 		'Close the output file:
 			Close #intFileNumber
+End Sub
+
+Sub List_Folder_Contents (Files() as String, ByVal Path as String, ByVal Extension as String = "*")
+	'SUMMARY:
+		'[List_Folder_Contents] returns a list of all the files in the [Path] with the [Extension].
+	'INPUT:
+		'Path: The folder location to be searched for files.
+		'Extension: The extension to look for in the [Path].
+	'OUTPUT:
+		'Files(): The output array, where the seperate files are stored.
+	'VARIABLES:
+		Dim strSlash as String 'The OS-specific slash.
+		Dim strFileName as String 'The name of the current file in the folder.
+		Dim intFiles as Integer 'The number of files found in the folder.
+	'PROCESSING:
+		'Initialize:
+			intFiles = 0
+			#ifdef __FB_LINUX__
+			strSlash = "/"
+			#else
+			strSlash = "\"
+			#endif
+		'Get the first file in the folder:
+			strFileName = Dir(Path & strSlash & "*." & Extension, &h21)
+		'While there is a file to process:
+			While Len(strFileName) > 0
+				'If the file is not [.] or [..]:
+					If (strFileName <> ".") And (strFileName <> "..") Then
+						'Add a file to the [Files] array:
+							intFiles = intFiles + 1
+							ReDim Preserve Files(intFiles) As String
+							Files(intFiles) = strFileName
+					End If
+				strFileName = Dir()
+			Wend
 End Sub

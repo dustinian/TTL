@@ -3,7 +3,7 @@
 '---------------------------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: A library of custom subroutines to create and manipulate a dnynamic array of strings.
-	'Author: Dustinian Camburides
+	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Revision: 1.1
 	'Updated: 4/15/2013

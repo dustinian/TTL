@@ -5,10 +5,12 @@
 	'Purpose: A library of custom functions that transform strings.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 1.9
-	'Updated: 5/1/2013
+	'Revision: 2.0
+	'Updated: 12/18/2014
 '---------------------------------------------------------------------------------------------------
-'REVISION HISTORY
+'REVISION HISTORY'
+	'2.0: Fixed:
+				'Logic error in [Replace_From] that caused subsequent instances of a [Precedent] not to be recognized.
 	'1.9: Updated:
 				'Added scope control (ByVal, ByRef) to each parameter in each function.
 				'Made the [Start] parameter optional for [Replace_Once] function.
@@ -131,7 +133,7 @@ Function Replace_From (ByVal Text As String, ByVal Precedant As String, ByVal An
 							lngStart = lngStart + Instr((lngStart + 1), Text, Precedant)
 					End If
 				'Increment the start point:
-					lngStart = Instr((lngStart + Len(Precedant) + Len(Substitute) + Len(Antecedant)), Text, Precedant)
+					lngStart = Instr(lngStart + 1, Text, Precedant)
 		'Next instance of [Precedant]...
 			Wend
 	'OUTPUT:
