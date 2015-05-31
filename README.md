@@ -29,17 +29,17 @@ Use the "CHR()" operator to look for characters that you can't easily type into 
 * REPLACE CHR(8) WITH CHR(9)
 ###Tokens
 Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable.
-Token | Chr
-------|----
-TAB | 9
-\T | 9
-NEWLINE | 10
-\N | 10
-CARRIAGERETURN | 13
-\R | 13
-LINEBREAK | 13 + 10
-\R\N | 13 + 10
-QUOTE | 34
+|Token | Chr|
+|------|----|
+|TAB | 9|
+|\T | 9|
+|NEWLINE | 10|
+|\N | 10|
+|CARRIAGERETURN | 13|
+|\R | 13|
+|LINEBREAK | 13 + 10|
+|\R\N | 13 + 10|
+|QUOTE | 34|
 * REPLACE TAB WITH ", "
 ###Concatenation
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
