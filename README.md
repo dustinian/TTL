@@ -16,10 +16,10 @@
 ###Commands
 Use the below commands to transform your input text into your output text.
 * REPLACE "find" WITH "add"
-* REPLACE ALL WITH "add" BETWEEN "precedant" AND "antecedant"
-* REPLACE "find" WITH "add" BETWEEN "precedant" AND "antecedant"
-* REPLACE ALL WITH "add" FROM "precedant" TO "antecedant"
-* REPLACE FIRST "find" AFTER "precedant" WITH "add"
+* REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
+* REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
+* REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
+* REPLACE FIRST "find" AFTER "precedent" WITH "add"
 ###Modules
 Use the below command to include a separate file of TTL commands into your current script.
 * INCLUDE "c:\example_folder\example_file.ttl"
@@ -42,7 +42,7 @@ LINEBREAK | 13 + 10
 QUOTE | 34
 * REPLACE TAB WITH ", "
 ###Concatenation
-Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple substrings into a single string in a TTL command.
+Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
 * REPLACE "</p>" + NEWLINE + NEWLINE WITH "</p>" + NEWLINE
 ##Instructions
 1 Using the syntax above, enter your commands into a plain-text file.
@@ -68,15 +68,15 @@ Use the "+" or the "&" characters (no difference in functionality) to concatenat
 * **1.0**: First working version.
 ##Planned Enhancements
 ###Major
-* **Target Folder**: The ability to target all the files in a folder and its subfolders (filtered by extension).
+* **Target Folder**: The ability to target all the files in a folder and its sub-folders (filtered by extension).
 * **Append/Prepend**: The ability to append text from another file to the beginning or end of the current file.
 * **Replace All Once / Recursive**: The ability to determine whether all instances of a query string are replaced once per initial location in a file... or over and over again until they no longer occur.
 * **Debug Logs**: The ability to log transformations in progress at different levels of detail.
 * **Text User-Interface (TUI)**: A user interface assembled from ASCII characters (similar to the QB IDE).
 * **Graphical User-Interface (GUI)**: A windows-style user interface (buttons, menus, scroll bars, etc.).
-* **Syntax Definitons**: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
+* **Syntax Definitions**: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 ###Minor
-* Wildcards: Symbols For "wildcard" searches (*, #, etc.).
+* Wild Cards: Symbols For "wild card" searches (*, #, etc.).
 ##Sample Files
 * **Script**: eyrie_script.ttl, written to convert Gryphon's stories at Eyrie Productions, Unlimited.
 * **Input**: eyrie_input.txt, part I of "The Fulcrum of Fate" by Gryphon.
