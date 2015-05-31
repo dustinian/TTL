@@ -5,16 +5,13 @@
 * **Platform**: FreeBASIC (www.freebasic.net)
 * **Revision**: 2.2
 * **Updated**: 3/13/2015
-
 ##Downloads
 * **Compiled Intepreter**: ttl.exe
 * **Source Code**: text_transformation_language.zip
-
 ##Interact
 * Collaborate on this project: GitHub
 * Report a bug: Issues
 * Comment on this project: Freebasic.net Forums
-
 ##Command Syntax
 ###Commands
 Use the below commands to transform your input text into your output text.
@@ -26,7 +23,6 @@ Use the below commands to transform your input text into your output text.
 ###Modules
 Use the below command to include a separate file of TTL commands into your current script.
 * INCLUDE "c:\example_folder\example_file.ttl"
-
 ##String Syntax
 ###Chr
 Use the "CHR()" operator to look for characters that you can't easily type into an ASCII TTL file.
@@ -48,17 +44,14 @@ QUOTE | 34
 ###Concatenation
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple substrings into a single string in a TTL command.
 * REPLACE "</p>" + NEWLINE + NEWLINE WITH "</p>" + NEWLINE
-
 ##Instructions
 1 Using the syntax above, enter your commands into a plain-text file.
 2 Run ttl.exe; use the command-line parameters to tell the interpreter where to find:
 	* The command file
 	* The input file
 	* The output file
-
 ##Command-Line Parameters
 * ttl.exe script_path.ttl input_path.txt output_path.txt
-
 ##Revision History
 * **2.2**: Added "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
 * **2.1**: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
@@ -73,7 +66,6 @@ Use the "+" or the "&" characters (no difference in functionality) to concatenat
 * **1.2**: Added the ability to target any script to any file through a command-line parameter.
 * **1.1**: Re-ordered and re-organized procedures For logical consistency.
 * **1.0**: First working version.
-
 ##Planned Enhancements
 ###Major
 * **Target Folder**: The ability to target all the files in a folder and its subfolders (filtered by extension).
@@ -85,7 +77,6 @@ Use the "+" or the "&" characters (no difference in functionality) to concatenat
 * **Syntax Definitons**: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 ###Minor
 * Wildcards: Symbols For "wildcard" searches (*, #, etc.).
-
 ##Sample Files
 * **Script**: eyrie_script.ttl, written to convert Gryphon's stories at Eyrie Productions, Unlimited.
 * **Input**: eyrie_input.txt, part I of "The Fulcrum of Fate" by Gryphon.
