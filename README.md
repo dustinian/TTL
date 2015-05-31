@@ -1,4 +1,4 @@
-#Text Transformation Language
+﻿#Text Transformation Language
 ##Summary
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 * **Author**: Dustinian Camburides
