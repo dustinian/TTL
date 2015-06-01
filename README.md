@@ -3,27 +3,20 @@
 ##Summary
 
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
-
 * **Author**: Dustinian Camburides
-
 * **Platform**: FreeBASIC (www.freebasic.net)
-
 * **Revision**: 2.2
-
 * **Updated**: 3/13/2015
 
 ##Downloads
 
 * **Compiled Intepreter**: ttl.exe
-
 * **Source Code**: text_transformation_language.zip
 
 ##Interact
 
 * Collaborate on this project: GitHub
-
 * Report a bug: Issues
-
 * Comment on this project: Freebasic.net Forums
 
 ##Command Syntax
@@ -33,13 +26,9 @@
 Use the below commands to transform your input text into your output text.
 
 * REPLACE "find" WITH "add"
-
 * REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
-
 * REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
-
 * REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
-
 * REPLACE FIRST "find" AFTER "precedent" WITH "add"
 
 ###Modules
