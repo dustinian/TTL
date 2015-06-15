@@ -67,7 +67,7 @@ QUOTE | 34
 
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
 
-* REPLACE "</p>" + NEWLINE + NEWLINE WITH "</p>" + NEWLINE
+* REPLACE "</p>" & NEWLINE & NEWLINE WITH "</p>" + NEWLINE
 
 ##Instructions
 
