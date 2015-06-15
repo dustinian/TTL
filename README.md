@@ -15,9 +15,10 @@
 
 ##Interact
 
-* Collaborate on this project: GitHub
-* Report a bug: Issues
-* Comment on this project: Freebasic.net Forums
+* Collaborate on this project: [GitHub](https://github.com/dustinian/ttl)
+* Report a bug: [Issues](https://github.com/dustinian/ttl/issues)
+* Comment on this project: [Freebasic.net Forums](http://www.freebasic.net/forum/viewtopic.php?f=8&t=21197)
+* Download a compiled version: [dustinian.com](http://www.dustinian.com/software/text_transformation_language.html)
 
 ##Command Syntax
 
@@ -47,7 +48,7 @@ Use the "CHR()" operator to look for characters that you can't easily type into 
 
 ###Tokens
 
-Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable.
+Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable. Tokens must appear OUTSIDE quotation marks to be intepreted correctly.
 
 Token | Chr
 ------|----
@@ -67,12 +68,16 @@ QUOTE | 34
 
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
 
-* REPLACE "</p>" & NEWLINE & NEWLINE WITH "</p>" + NEWLINE
+* REPLACE "'</p>'" & NEWLINE & NEWLINE WITH "'</p>'" + NEWLINE
+
+###Quotation Marks
+
+Quotation marks tell TTL that everything inside the quotation is a sub-string. TTL does NOT parse text inside quotation marks for TTL Commands or Tokens.
 
 ##Instructions
 
-1 Using the syntax above, enter your commands into a plain-text file.
-2 Run ttl.exe; use the command-line parameters to tell the interpreter where to find:
+1. Using the syntax above, enter your commands into a plain-text file.
+2. Run ttl.exe; use the command-line parameters to tell the interpreter where to find:
 	* The command file
 	* The input file
 	* The output file
@@ -110,7 +115,7 @@ Use the "+" or the "&" characters (no difference in functionality) to concatenat
 
 ###Minor
 
-* Wild Cards: Symbols For "wild card" searches (*, #, etc.).
+* **Wild Cards**: Symbols For "wild card" searches (*, #, etc.).
 
 ##Sample Files
 
