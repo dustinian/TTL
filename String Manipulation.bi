@@ -11,6 +11,8 @@
 'REVISION HISTORY'
 	'2.1: Fixed:
 				'Infine loop in [Replace_Between] and [Replace_From] when [Antecedant] wasn't found.
+			'Added:
+				'[Replace_Once] function to facilitate simple find-and-replace with no regard to recursion.
 	'2.0: Fixed:
 				'Logic error in [Replace_From] that caused subsequent instances of a [Precedent] not to be recognized.
 	'1.9: Updated:
@@ -281,9 +283,11 @@ Function Replace_If_Between (ByVal Text As String, ByVal Precedant As String, By
 							strSubString = Replace(strSubString, Find, Substitute)
 						'Insert the new substring into the text:
 							Text = Left$(Text, ((lngStart + Len(Precedant)) - 1)) + strSubString + Right$(Text, (Len(Text) + 1 - lngLocation))
-					Else
 						'Increment the start point:
 							lngStart = lngStart + Len(Precedant) + Len(strSubString) + Len(Antecedant) + 1
+					Else
+						'Increment the start point:
+							lngStart = lngStart + Len(Precedant)
 					End If
 				'Find the next instance:
 					lngStart = Instr(lngStart, Text, Precedant)

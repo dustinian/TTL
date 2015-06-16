@@ -9,16 +9,18 @@
 	'Updated: 6/15/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
-   '1.4: Updated
-            	'[File_Input] now tries to figure out how the input file is encoded.
-            	'[File_Input] uses WInput to open large files much more quickly than looped line-inputs.
+	'1.5: Updates
+			'Reverted changes from 1.4. It was faster, but it created too many encoding problems.
+	'1.4: Updated
+			'[File_Input] now tries to figure out how the input file is encoded.
+			'[File_Input] uses WInput to open large files much more quickly than looped line-inputs.
 	'1.3: Added:
-				'[Folder_Contents] function to return all files in a folder.
+			'[Folder_Contents] function to return all files in a folder.
 	'1.2: Updated:
-				'Migrated from QB64 (www.qb64.net) to FreeBASIC (www.freebasic.net).
+			'Migrated from QB64 (www.qb64.net) to FreeBASIC (www.freebasic.net).
 	'1.1: Added:
-				'[FreeFile] function (rather than defaulting all file streams to #1).
-				'[_FILEEXISTS] function (rather than error-trapping).
+			'[FreeFile] function (rather than defaulting all file streams to #1).
+			'[_FILEEXISTS] function (rather than error-trapping).
 	'1.0: First working version.
 '---------------------------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
@@ -43,72 +45,36 @@ Function Input_File (ByVal Path As String) As String
 	'INPUT:
 		'Path: The location of the file.
 	'VARIABLES:
-		Dim lngFileLength As Long 'The length of the file being input.
+		Dim strLine As String 'The current [Line] being added to the [File Text] string.
 		Dim strFileText As String 'The [File Text] of the [Input File].
-		Dim strBOM As String 'The Byte Order Mark in the file.
-		Dim intBOMLength As Integer 'The number of characters in the BOM.
-		Dim strEncoding As String 'The encoding of the input file.
 		Dim intFileNumber As Integer 'The number of the file.
+	'INITIALIZE:
+		strFileText = ""
 	'PROCESSING:
 		'If the file exists:
 			If FileExists(Path) Then
 				'Open the input file:
 					intFileNumber = FreeFile
-					Open Path For Input AS #intFileNumber
-				'Get the BOM:
-				   strBOM = WInput(4, intFileNumber)
-				'Close the file:
-				   Close #intFileNumber
-				'Intepret the BOM:
-				   If Left(strBOM, 3) = Chr(239, 187, 191) Then
-				      strEncoding = "utf-8"
-				      intBOMLength = 3
-				   ElseIf Left(strBOM, 2) = Chr(254, 255) Then
-				      strEncoding = "utf-16"
-				      intBOMLength = 2
-				   ElseIf Left(strBOM, 2) = Chr(255, 254) Then
-				      strEncoding = "utf-16"
-				      intBOMLength = 2
-				   ElseIf Left(strBOM, 4) = Chr(0, 0, 254, 255) Then
-				      strEncoding = "utf-32"
-				      intBOMLength = 4
-				   ElseIf Left(strBOM, 4) = Chr(255, 254, 0, 0) Then
-				      strEncoding = "utf-32"
-				      intBOMLength = 4
-				   ElseIf Left(strBOM, 3) = Chr(43, 47, 118) Then
-				      strEncoding = "ascii" 'UTF7 not supported.
-				      intBOMLength = 4
-				   ElseIf Left(strBOM, 3) = Chr(247, 100, 76) Then
-				      strEncoding = "ascii" 'UTF1 not supported.
-				      intBOMLength = 3
-				   ElseIf Left(strBOM, 4) = Chr(221, 115, 102, 115) Then
-				      strEncoding = "ascii" 'UTFEBCDIC not supported.
-				      intBomLength = 4
-				   ElseIf Left(strBOM, 3) = Chr(14, 254, 255) Then
-				      strEncoding = "ascii" 'SCSU not supported.
-				      intBOMLength = 3
-				   ElseIf Left(strBOM, 4) = Chr(251, 238, 40) Then
-				      strEncoding = "ascii" 'BOCU1 not supported.
-				      intBOMLength = 3
-				   ElseIf Left(strBOM, 4) = Chr(132, 49, 149, 51) Then
-				      strEncoding = "ascii" 'GB18030 not supported.
-				      intBOMLength = 4
-				   Else
-				      strEncoding = "ascii"
-				      intBOMLength = 0
-				   End If
-				'Open the input file:
-				   lngFileLength = FileLen(Path)
-					intFileNumber = FreeFile
-					Open Path For Input Encoding strEncoding As #intFileNumber
-				'Get the file text:
-				   strFileText = WInput(lngFileLength, intFileNumber)
+					OPEN Path For Input AS #intFileNumber
+				'While not at the end of the file...
+					While Not EOF(intFileNumber)
+						'Input a line of text:
+							Line Input #intFileNumber, strLine
+						'If the line is not blank...
+							If Len(strFileText) > 0 Then
+								'Add the [line feed] and [carriage return] characters and the [line] to the [file text]:
+									strFileText = strFileText & Chr$(13) & Chr$(10) & strLine
+							Else
+								'Add the new line to the file text:
+									strFileText = strLine
+							End If
+				'Next line...
+					Wend
 				'Close the input file:
 					Close #intFileNumber
 			End If
 	'OUTPUT:
-	   'Output the text:
-		   Input_File = strFileText
+		Input_File = strFileText
 End Function
 
 Sub Output_File (ByVal Text As String, ByVal Path As String)
