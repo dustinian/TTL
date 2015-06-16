@@ -5,10 +5,12 @@
 	'Purpose: A library of custom functions that transform strings.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.0
-	'Updated: 12/18/2014
+	'Revision: 2.1
+	'Updated: 6/16/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY'
+	'2.1: Fixed:
+				'Infine loop in [Replace_Between] and [Replace_From] when [Antecedant] wasn't found.
 	'2.0: Fixed:
 				'Logic error in [Replace_From] that caused subsequent instances of a [Precedent] not to be recognized.
 	'1.9: Updated:
@@ -63,6 +65,7 @@
 '---------------------------------------------------------------------------------------------------
 'PROCEDURES
 	Declare Function Replace (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
+	Declare Function Replace_Once (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
 	Declare Function Replace_From (ByVal Text As String, ByVal Precedant As String, ByVal Antecedant As String, ByVal Substitute As String) As String
 	Declare Function Replace_Between (ByVal Text As String, ByVal Precedant As String, ByVal Antecedant As String, ByVal Substitute As String) As String
 	Declare Function Replace_Subsequent (ByVal Text As String, ByVal Precedant As String, ByVal Find As String, ByVal Substitute As String) As String
@@ -102,6 +105,36 @@ Function Replace (ByVal Text As String, ByVal Find As String, ByVal Substitute A
 		Replace = Text
 End Function
 
+Function Replace_Once (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
+	'SUMMARY:
+		'[Replace_Once] replaces all instances of the [Find] sub-string with the [Substitute] sub-string within the [Text] string.
+	'INPUT:
+		'Text: The input string; the text that's being manipulated.
+		'Find: The specified sub-string; the string sought within the [Text] string.
+		'Substitute: The sub-string that's being added to the [Text] string.
+	'VARIABLES:
+		Dim lngLocation As Long 'The address of the [Find] substring within the [Text] string.
+		Dim strBefore As String 'The characters before the string to be replaced.
+		Dim strAfter As String 'The characters after the string to be replaced.
+	'INITIALIZE:
+		lngLocation = Instr(1, Text, Find)
+	'PROCESSING:
+		'While [Find] appears in [Text]...
+			While lngLocation
+				'Extract all text before the [Find] substring:
+					strBefore = Left$(Text, lngLocation - 1)
+				'Extract all text after the [Find] substring:
+					strAfter = Right$(Text, ((Len(Text) - (lngLocation + Len(Find) - 1))))
+				'Return the substring:
+					Text = strBefore + Substitute + strAfter
+				'Locate the Next instance of [Find]:
+					lngLocation = Instr(lngLocation + Len(Substitute) + 1, Text, Find)
+		'Next instance of [Find]...
+			Wend
+	'OUTPUT:
+		Replace_Once = Text
+End Function
+
 Function Replace_From (ByVal Text As String, ByVal Precedant As String, ByVal Antecedant As String, ByVal Substitute As String) As String
 	'SUMMARY:
 		'[Replace_From] replaces characters in the [Text] string from the start of the [Precedant] sub-string to the end of the [Antecedant] sub-string with the [Substitute] sub-string.
@@ -128,12 +161,14 @@ Function Replace_From (ByVal Text As String, ByVal Precedant As String, ByVal An
 							lngStop = lngStop + Len(Antecedant) - 1
 						'Replace the text:
 							Text = Left$(Text, (lngStart - 1)) + Substitute + Right$(Text, (Len(Text) - lngStop))
+						'Increment the start point to after the replacement:
+							lngStart = lngStart + Len(Substitute) + 1
 					Else
-						'Increment the start point:
-							lngStart = lngStart + Instr((lngStart + 1), Text, Precedant)
+						'Increment the start point if [Antecedant] is not found:
+							lngStart = lngStart + Len(Precedant)
 					End If
-				'Increment the start point:
-					lngStart = Instr(lngStart + 1, Text, Precedant)
+				'Find the next instance:
+					lngStart = Instr(lngStart, Text, Precedant)
 		'Next instance of [Precedant]...
 			Wend
 	'OUTPUT:
@@ -166,12 +201,14 @@ Function Replace_Between (ByVal Text As String, ByVal Precedant As String, ByVal
 							lngStop = lngStop - 1
 						'Replace the text:
 							Text = Left$(Text, (lngStart + Len(Precedant) - 1)) + Substitute + Right$(Text, (Len(Text) - lngStop))
+						'Increment the start point to after the replacement:
+							lngStart = lngStart + Len(Precedant) + Len(Substitute) + Len(Antecedant) + 1
 					Else
-						'Increment the start point:
-							lngStart = Instr((lngStart + 1), Text, Precedant)
+						'Increment the start point if [Antecedant] is not found:
+							lngStart = lngStart + Len(Precedant)
 					End If
-				'Increment the start point:
-					lngStart = Instr((lngStart + Len(Precedant) + Len(Substitute) + Len(Antecedant)), Text, Precedant)
+				'Find the next instance:
+					lngStart = Instr(lngStart, Text, Precedant)
 		'Next instance of [Precedant]...
 			Wend
 	'OUTPUT:
@@ -204,10 +241,10 @@ Function Replace_Subsequent (ByVal Text As String, ByVal Precedant As String, By
 						'Replace the text:
 							Text = Left$(Text, (lngLocation - 1)) + Substitute + Right$(Text, (Len(Text) - lngStop))
 						'Increment the start point:
-							lngStart = Instr((lngStart + Len(Precedant) + Len(Substitute)), Text, Precedant)
+							lngStart = lngLocation + Len(Substitute) + 1
 					Else
-						'Increment the start point:
-							lngStart = Instr((lngStart + 1), Text, Precedant)
+				'Find the next instance:
+							lngStart = Instr(lngStart, Text, Precedant)
 					End If
 		'Next instance of [Precedant]...
 			Wend
@@ -246,10 +283,10 @@ Function Replace_If_Between (ByVal Text As String, ByVal Precedant As String, By
 							Text = Left$(Text, ((lngStart + Len(Precedant)) - 1)) + strSubString + Right$(Text, (Len(Text) + 1 - lngLocation))
 					Else
 						'Increment the start point:
-							lngStart = Instr(lngLocation, Text, Precedant)
+							lngStart = lngStart + Len(Precedant) + Len(strSubString) + Len(Antecedant) + 1
 					End If
-				'Increment the start point:
-					lngStart = Instr(lngStart + Len(Precedant) + Len(strSubString) + Len(Antecedant), Text, Precedant)
+				'Find the next instance:
+					lngStart = Instr(lngStart, Text, Precedant)
 		'Next instance of [Precedant]...
 			Wend
 	'OUTPUT:
@@ -281,12 +318,12 @@ Function Between (ByVal Text As String, ByVal Precedant As String, ByVal Anteced
 				'If the [Antecedant] was present...
 					If lngLocation Then
 						'Calculate the characters to keep:
-							 lngLength = (lngLocation - lngStart)
+							lngLength = (lngLocation - lngStart)
 						'Return the substring:
-							 Between = Mid$(Text, lngStart, lngLength)
+							Between = Mid$(Text, lngStart, lngLength)
 					Else
 						'Return a null string:
-							 Between = ""
+							Between = ""
 					End If
 			Else
 				'Return a null string:
