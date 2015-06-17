@@ -88,6 +88,7 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 
 ##Revision History
 
+* **2.3**: Added [Replace_Once] command.
 * **2.2**: Added on-screen "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
 * **2.1**: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
 * **2.0**: Fixed an infinite loop that occurs when the [add] sub-string contains the [find] sub-string, updated command-line parameter parsing.
@@ -106,7 +107,6 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 
 ###Major
 * **Target Folder**: The ability to target all the files in a folder and its sub-folders (filtered by extension).
-* **Replace All Once / Recursive**: The ability to determine whether all instances of a query string are replaced once per initial location in a file... or over and over again until they no longer occur.
 * **Debug Logs**: The ability to log transformations in progress at different levels of detail.
 * **Text User-Interface (TUI)**: A user interface assembled from ASCII characters (similar to the QB IDE).
 * **Graphical User-Interface (GUI)**: A windows-style user interface (buttons, menus, scroll bars, etc.).
@@ -116,7 +116,6 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 ###Minor
 
 * **Prepend/Append**: The ability to append text from another file to the beginning or end of the current file.
-* **Faster File Load**: Speed up loading input files into memory.
 
 ##Sample Files
 

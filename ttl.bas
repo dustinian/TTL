@@ -50,6 +50,7 @@
 	'ttl.exe script_path.ttl input_path.txt output_path.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.3: Added [Replace_Once] command.
 	'2.2: Added "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
 	'2.1: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
 	'2.0: Fixed an infinite loop that occurs when the [add] sub-string contains the [find] sub-string, updated command-line parameter parsing.
@@ -68,7 +69,6 @@
 	'Major:
 		'Target Folder: The ability to target all the files in a folder and its subfolders (filtered by extension).
 		'Append/Prepend: The ability to append text from another file to the beginning or end of the current file.
-		'Replace All Once / Recursive: The ability to determine whether all instances of a query string are replaced once per initial location in a file... or over and over again until they no longer occur.
 		'Debug Logs: The ability to log transformations in progress at different levels of detail.
 		'Text User-Interface (TUI): A user interface assembled from ASCII characters (similar to the QB IDE).
 		'Graphical User-Interface (GUI): A windows-style user interface (buttons, menus, scroll bars, etc.).
@@ -622,6 +622,7 @@ Sub Validate_Command (Words() As String)
 						Case "NEXT"
 						Case "TO"
 						Case "FIRST"
+						Case "ONCE"
 						Case Else
 							Print "Error 0000: Unrecognized word " + Words(intWord)
 							End
@@ -668,22 +669,23 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					End
 				End If
 			Case 4
-				Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
-				End
+				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "ONCE" Then
+					Temporary_Command.Operation = "REPLACEONCE"
+					Temporary_Command.Find = Command_Words(1)
+					Temporary_Command.Add = Command_Words(3)
+				Else
+					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
+					End
+				End If
 			Case 5
 				Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
 				End
 			Case 6
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "AFTER" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
-					If InStr(1, Interior_Characters(Command_Words(6)), Interior_Characters(Command_Words(2))) < 1 Then
-						Temporary_Command.Operation = "REPLACESUBSEQUENT"
-						Temporary_Command.Find = Command_Words(2)
-						Temporary_Command.Add = Command_Words(6)
-						Temporary_Command.Precedant = Command_Words(4)
-					Else
-						Print "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
-						End
-					End If
+					Temporary_Command.Operation = "REPLACESUBSEQUENT"
+					Temporary_Command.Find = Command_Words(2)
+					Temporary_Command.Add = Command_Words(6)
+					Temporary_Command.Precedant = Command_Words(4)
 				Else
 					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
 					End
@@ -793,6 +795,8 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 		Select Case LTrim$(RTrim$(TTLCommand.Operation))
 			Case "REPLACE"
 				Text = Replace(Text, Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+			Case "REPLACEONCE"
+				Text = Replace_Once(Text, Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEBETWEEN"
 				Text = Replace_Between(Text, Interior_Characters(TTLCommand.Precedant), Interior_Characters(TTLCommand.Antecedant), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEIFBETWEEN"
