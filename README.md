@@ -26,17 +26,17 @@
 
 Use the below commands to transform your input text into your output text.
 
-* 'REPLACE "find" WITH "add"'
-* 'REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"'
-* 'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"'
-* 'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"'
-* 'REPLACE FIRST "find" AFTER "precedent" WITH "add"'
+* `REPLACE "find" WITH "add"`
+* `REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"`
+* `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"`
+* `REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"`
+* `REPLACE FIRST "find" AFTER "precedent" WITH "add"`
 
 ###Modules
 
 Use the below command to include a separate file of TTL commands into your current script.
 
-* 'INCLUDE "c:\example_folder\example_file.ttl"'
+* `INCLUDE "c:\example_folder\example_file.ttl"`
 
 ##String Syntax
 
@@ -44,7 +44,7 @@ Use the below command to include a separate file of TTL commands into your curre
 
 Use the "CHR()" operator to look for characters that you can't easily type into an ASCII TTL file.
 
-* 'REPLACE CHR(8) WITH CHR(9)'
+* `REPLACE CHR(8) WITH CHR(9)`
 
 ###Tokens
 
@@ -62,13 +62,13 @@ LINEBREAK | 13 + 10
 \R\N | 13 + 10
 QUOTE | 34
 
-* 'REPLACE TAB WITH ", "'
+* `REPLACE TAB WITH ", "`
 
 ###Concatenation
 
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
 
-* 'REPLACE "</p>" & NEWLINE & NEWLINE WITH "</p>" + NEWLINE'
+* `REPLACE "</p>" & NEWLINE & NEWLINE WITH "</p>" + NEWLINE`
 
 ###Quotation Marks
 
@@ -84,7 +84,7 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 
 ##Command-Line Parameters
 
-* 'ttl.exe script_path.ttl input_path.txt output_path.txt'
+* `ttl.exe script_path.ttl input_path.txt output_path.txt`
 
 ##Revision History
 
