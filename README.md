@@ -27,10 +27,19 @@
 Use the below commands to transform your input text into your output text.
 
 * `REPLACE "find" WITH "add"`
-* `REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"`
+	* Replaces every instance of "find" with "add." This function is **recursive** (it will keep finding "find" over and over again until "find" is gone). Therefore, this function will throw an error is "add" contains "find," because this command would never finish.
+* `REPLACE "find" WITH "add" ONCE`
+	* Replaces every instance of "find" with "add," but only once per instance of "find." This function is **not recursive**. This is useful if you want to do a replace, but your "add" contains your "find." Something like:
+		* `REPLACE "</p>" WITH "</p>" + NEWLINE ONCE`
 * `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"`
+	* This replaces "find" with "add," but only when "find" appears between "precedant" and "antecedant." In other words, if you wanted to replace all the NEWLINEs with spaces but only inside of a table cell, you might say:
+		*`REPLACE NEWLINE WITH " " BETWEEN "<td>" AND "</td>"`
+* `REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"`
+	* This replaces everything between the "precendant" and the "antecedant," but **excludes** the "precedant" and "antecedant" from the replacement. In other words, after the operation is complete, you would see the "precedant," the "add," and the "antecedant."
 * `REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"`
+	* This replaces everything between the "precendant" and the "antecedant," but **includes** the "precedant" and "antecedant." In other words, after the operation is complete, you would see only the "add." The "precedant" and "antecedant" would gone.
 * `REPLACE FIRST "find" AFTER "precedent" WITH "add"`
+	* This replaces only the first instance of "find" after the "precedant" with "add." Example: You run an operation to replace some of your p tags with h2 tags in an HTML document. You'd naturally want to replace some of the /p tags with /h2 tags... but how can you target only those /p tags that follow an h2 tag? This operation does that.
 
 ###Modules
 
