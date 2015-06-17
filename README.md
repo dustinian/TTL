@@ -5,8 +5,8 @@
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 * **Author**: Dustinian Camburides
 * **Platform**: FreeBASIC (www.freebasic.net)
-* **Revision**: 2.2
-* **Updated**: 3/13/2015
+* **Revision**: 2.3
+* **Updated**: 6/16/2015
 
 ##Downloads
 
