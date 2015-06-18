@@ -5,8 +5,8 @@
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.3
-	'Updated: 6/16/2015
+	'Revision: 2.4
+	'Updated: 6/18/2015
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
@@ -15,6 +15,7 @@
 'COMMAND SYNTAX
 	'Commands: Use the below commands to transform your input text into your output text.
 		'REPLACE "find" WITH "add"
+		'REPLACE "find" WITH "add" ONCE
 		'REPLACE ALL WITH "add" BETWEEN "precedant" AND "antecedant"
 		'REPLACE "find" WITH "add" BETWEEN "precedant" AND "antecedant"
 		'REPLACE ALL WITH "add" FROM "precedant" TO "antecedant"
@@ -50,6 +51,7 @@
 	'ttl.exe script_path.ttl input_path.txt output_path.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.4: TTL can now transform multiple files!
 	'2.3: Added [Replace_Once] command.
 	'2.2: Added "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
 	'2.1: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
@@ -118,10 +120,8 @@
 '---------------------------------------------------------------------------------------------------
 'GLOBAL VARIABLES:
 	Dim strCommandLineParameter As String 'The command-line parameters that TTL was run with.
-	Dim strScriptPath As String 'The path of the script (TTL algorithm) to be run.
-	Dim strInputPath As String 'The path of the input file the script will run against.
-	Dim strOutputPath As String 'The path where TTL should put the finished text.
 	Dim udtCommands() As TTLCommand 'The dynamic array of [Commands] that will be assembled and executed.
+	Dim intInputFile As Integer
 	Dim strInputText As String 'The input text the script will run against.
 	Dim strFiles() As String 'The files in the target folder.
 '---------------------------------------------------------------------------------------------------
@@ -131,26 +131,27 @@
 	'PROCESSING:
 		'If there are command-line arguments to process:
 			If Command$ <> "" Then
-				'Parse the script path out of the command-line parameters:
-					strScriptPath = Command$(1)
-				'Parse the input path out of the command-line parameters:
-					strInputPath = Command$(2)
-				'Parse the output path out of the command-line parameters:
-					strOutputPath = Command$(3)
 				'If the command-line arguments are not blank:
-					If strScriptPath <> "" And strInputPath <> "" And strOutputPath <> "" Then
+					If Command$(1) <> "" And Command$(2) <> "" Then
 						'Parse the script:
 							Print "LOADING/PARSING SCRIPT>>>"
-							Parse_Script(udtCommands(), strScriptPath)
-						'Load the input text:
-							Print "LOADING INPUT FILE>>>"
-							strInputText = Input_File(strInputPath)
-						'Execute the script:
-							Print "EXECUTING SCRIPT>>>"
-							strInputText = Execute_Script(udtCommands(), strInputText)
-						'Output the output text:
-							Print "OUTPUTTING FILE>>>"
-							Output_File(strInputText, strOutputPath)
+							Parse_Script(udtCommands(), Command$(1))
+						'Initialize:
+							intInputFile = 2
+						'While there is a command-line argument (file name) to process...
+							While Command$(intInputFile) <> ""
+								'Load the input text:
+									Print "LOADING FILE>>> " & Command$(intInputFile)
+									strInputText = Input_File(Command$(intInputFile))
+								'Execute the script:
+									Print "EXECUTING SCRIPT>>> " & Command$(intInputFile)
+									strInputText = Execute_Script(udtCommands(), strInputText)
+								'Output the output text:
+									Print "OUTPUTTING FILE>>> " & Command$(intInputFile)
+									Output_File(strInputText, Command$(intInputFile))
+								'Increment the command-line argument:
+									intInputFile = intInputFile + 1
+							Wend
 					Else
 						Print "ERROR: CANNOT PARSE COMMAND-LINE ARGUMENTS..."
 					End If
@@ -159,9 +160,6 @@
 			End If
 		End
 
-'---------------------------------------------------------------------------------------------------
-'Parse
-'---------------------------------------------------------------------------------------------------
 Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
 	'SUMMARY:
 		'[Parse_Script] .
@@ -761,9 +759,6 @@ Sub Add_Commands (Main_Commands() As TTLCommand, New_Commands() As TTLCommand, L
 		End If
 End Sub
 
-'---------------------------------------------------------------------------------------------------
-'Execute
-'---------------------------------------------------------------------------------------------------
 Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 	'SUMMARY:
 		'[Execute_Script] runs the array of TTL [Commands] on the [Text].
