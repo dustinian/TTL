@@ -19,7 +19,7 @@
 		'None at this time.
 '---------------------------------------------------------------------------------------------------
 'PROCEDURES
-	Declare Sub Seperate_Lines (Words() As String, ByVal Text As String, ByVal Seperator As String)
+	Declare Sub Separate_Lines (Words() As String, ByVal Text As String, ByVal Separator As String)
 	Declare Sub Remove_Word(Words() As String, ByVal Index As Integer)
 	Declare Sub Remove_Blank_Words (Words() As String)
 '---------------------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ Sub Remove_Word(Words() As String, ByVal Index As Integer)
 	'SUMMARY:
 		'[Remove_Word] removes a word from a dynamic array of strings.
 	'INPUT:
-		'Words(): The dynamic array, where seperate elements are stored.
+		'Words(): The dynamic array, where separate elements are stored.
 		'Index: The element to be removed from the dynamic array.
 	'VARIABLES:
 		Dim intWord As Integer 'The [Word] in the [Words] array.
@@ -42,36 +42,36 @@ Sub Remove_Word(Words() As String, ByVal Index As Integer)
 			ReDim Preserve Words(UBound(Words) - 1) As String
 End Sub
 
-Sub Seperate_Lines (Words() As String, ByVal Text As String, ByVal Seperator As String)
+Sub Separate_Lines (Words() As String, ByVal Text As String, ByVal Separator As String)
 	'SUMMARY:
-		'[Seperate_Lines] extracts individual sub-strings from a string.
+		'[Separate_Lines] extracts individual sub-strings from a string.
 	'INPUT:
-		'Words(): The output array, where seperate [sub-strings] are stored.
+		'Words(): The output array, where separate [sub-strings] are stored.
 		'Text: The input string being filtered.
-		'Seperator: The character(s) that seperates [sub-strings].
+		'Separator: The character(s) that separates [sub-strings].
 	'VARIABLES:
-		Dim lngLocation As Long 'The location of the [Seperator] within the [Text].
-		Dim lngStart As Long 'The starting point For the Next search For a [Seperator] within the [Text].
+		Dim lngLocation As Long 'The location of the [Separator] within the [Text].
+		Dim lngStart As Long 'The starting point For the Next search For a [Separator] within the [Text].
 		Dim intLines As Integer 'The total number of lines in the dynamic array.
 	'INITIALIZE:
-		Text = Text + Seperator
+		Text = Text + Separator
 		intLines = 0
 		lngStart = 1
-		lngLocation = INSTR(lngStart, Text, Seperator)
+		lngLocation = INSTR(lngStart, Text, Separator)
 	'PROCESSING:
-		'While the [Seperator] appears in the [Text]...
+		'While the [Separator] appears in the [Text]...
 			While (lngLocation > 0)
 				'Increment the number of lines:
 					intLines = intLines + 1
-				'Re-size the dynmaic array:
+				'Re-size the dynamic array:
 					ReDim Preserve Words(intLines) As String
 				'Extract the [sub-string] from the [Text]:
 					Words(intLines) = Mid$(Text, lngStart, (lngLocation - lngStart))
 				'Move the [Start] pointer beyond the end of the [sub-string]:
 					lngStart = lngLocation + 1
-				'Locate the Next [Seperator] within the [Text]:
-					lngLocation = InStr(lngStart, Text, Seperator)
-		'Next instance of [Seperator]...
+				'Locate the Next [Separator] within the [Text]:
+					lngLocation = InStr(lngStart, Text, Separator)
+		'Next instance of [Separator]...
 			Wend
 End Sub
 
@@ -79,7 +79,7 @@ Sub Remove_Blank_Words (Words() As String)
 	'SUMMARY:
 		'[Remove_Blank_Words] removes blank elements from a dynamic array of strings.
 	'INPUT/OUTPUT:
-		'Words(): The dynamic array, where seperate elements are stored.
+		'Words(): The dynamic array, where separate elements are stored.
 	'VARIABLES:
 		Dim intElement As Integer 'The element within the array.
 	'PROCESSING:

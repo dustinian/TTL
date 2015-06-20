@@ -102,7 +102,7 @@ Sub List_Folder_Contents (Files() as String, ByVal Path as String, ByVal Extensi
 		'Path: The folder location to be searched for files.
 		'Extension: The extension to look for in the [Path].
 	'OUTPUT:
-		'Files(): The output array, where the seperate files are stored.
+		'Files(): The output array, where the separate files are stored.
 	'VARIABLES:
 		Dim strSlash as String 'The OS-specific slash.
 		Dim strFileName as String 'The name of the current file in the folder.

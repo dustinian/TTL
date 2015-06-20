@@ -10,17 +10,17 @@
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
-	'2. Run the TTL intepreter, identifying the script path, input path, and output path as command-line parameters.
+	'2. Run the TTL interpreter, identifying the script path and input path as command-line parameters.
 '---------------------------------------------------------------------------------------------------
 'COMMAND SYNTAX
 	'Commands: Use the below commands to transform your input text into your output text.
 		'REPLACE "find" WITH "add"
 		'REPLACE "find" WITH "add" ONCE
-		'REPLACE ALL WITH "add" BETWEEN "precedant" AND "antecedant"
-		'REPLACE "find" WITH "add" BETWEEN "precedant" AND "antecedant"
-		'REPLACE ALL WITH "add" FROM "precedant" TO "antecedant"
-		'REPLACE FIRST "find" AFTER "precedant" WITH "add"
-	'Modules: Use the below command to include a seperate file of TTL commands into your current script.
+		'REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
+		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
+		'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
+		'REPLACE FIRST "find" AFTER "precedent" WITH "add"
+	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
 '---------------------------------------------------------------------------------------------------
 'STRING SYNTAX
@@ -48,7 +48,8 @@
 			'Example: Replace "</P>" + NEWLINE + NEWLINE with "</P>" + NEWLINE
 '---------------------------------------------------------------------------------------------------
 'COMMAND-LINE PARAMETERS
-	'ttl.exe script_path.ttl input_path.txt output_path.txt
+	'ttl.exe script_path.ttl input_path.txt
+	'ttl.exe script_path.ttl *.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
 	'2.4: TTL can now transform multiple files!
@@ -69,12 +70,11 @@
 '---------------------------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
-		'Target Folder: The ability to target all the files in a folder and its subfolders (filtered by extension).
 		'Append/Prepend: The ability to append text from another file to the beginning or end of the current file.
 		'Debug Logs: The ability to log transformations in progress at different levels of detail.
 		'Text User-Interface (TUI): A user interface assembled from ASCII characters (similar to the QB IDE).
 		'Graphical User-Interface (GUI): A windows-style user interface (buttons, menus, scroll bars, etc.).
-		'Syntax Definitons: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
+		'Syntax Definitions: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 	'Minor:
 		'Wildcards: Symbols For "wildcard" searches (*, #, etc.).
 '---------------------------------------------------------------------------------------------------
@@ -90,8 +90,8 @@
 		Path As String * 255 'The path where an input file (include, append, etc.) may be found.
 		Find As String * 255 'The sub-string to be replaced by the "Add" sub-string.
 		Add As String * 255 'The sub-string to added to the main string.
-		Precedant As String * 255 'The sub-string that marks the beginning of an affected area in the main string.
-		Antecedant As String * 255 'The sub-string that marks the end of an affected area in the main string.
+		Precedent As String * 255 'The sub-string that marks the beginning of an affected area in the main string.
+		Antecedent As String * 255 'The sub-string that marks the end of an affected area in the main string.
 	End Type
 '---------------------------------------------------------------------------------------------------
 'PROCEDURES:
@@ -99,8 +99,8 @@
 		Declare Sub Load_Script (Words() As String, Commands() As TTLCommand)
 			Declare Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
 				Declare Sub Initialize_Command (Temporary_Command As TTLCommand)
-				Declare Sub Seperate_Words (Words() As String, Text_Command As String)
-				Declare Sub Intepret_Command (Temporary_Command As TTLCommand, Command_Words() As String)
+				Declare Sub Separate_Words (Words() As String, Text_Command As String)
+				Declare Sub Interpret_Command (Temporary_Command As TTLCommand, Command_Words() As String)
 					Declare Sub Normalize_Commands (Words() As String)
 					Declare Sub Remove_Comments (Words() As String)
 					Declare Sub Transform_CHR (Command_Words() As String)
@@ -115,8 +115,8 @@
 			Declare Function Interior_Characters(ByVal Text As String) As String
 '---------------------------------------------------------------------------------------------------
 'GLOBAL CONSTANTS:
-	Const TRUE = -1 'Allows integers to be "TRUE" (compability with other BASIC dialects).
-	Const FALSE = 0 'Allows integers to be "FALSE" (compability with other BASIC dialects).
+	Const TRUE = -1 'Allows integers to be "TRUE" (compatibility with other BASIC dialects).
+	Const FALSE = 0 'Allows integers to be "FALSE" (compatibility with other BASIC dialects).
 '---------------------------------------------------------------------------------------------------
 'GLOBAL VARIABLES:
 	Dim strCommandLineParameter As String 'The command-line parameters that TTL was run with.
@@ -180,8 +180,8 @@ Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
 	'PROCESSING:
 		'Load the script file:
 			strFileText = Input_File(Script_Path)
-		'Seperate the script into lines:
-			Seperate_Lines(strScriptText(), strFileText, Chr(13) + Chr(10))
+		'Separate the script into lines:
+			Separate_Lines(strScriptText(), strFileText, Chr$(13) + Chr$(10))
 		'Load the script:
 			Load_Script(strScriptText(), Commands())
 		'While there are more commands to add...
@@ -192,7 +192,7 @@ Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
 					If LTrim$(RTrim$(Commands(intCommand).Operation)) = "INCLUDE" Then
 						'Load the script file:
 							strFileText = Input_File(Between(Commands(intCommand).Path, Chr$(34), Chr$(34), 1))
-							Seperate_Lines(strScriptText(), strFileText, Chr$(13) + Chr$(10))
+							Separate_Lines(strScriptText(), strFileText, Chr$(13) + Chr$(10))
 						'Load the script:
 							Load_Script(strScriptText(), Temporary_Commands())
 						'Add the commands to the script:
@@ -247,17 +247,17 @@ Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
 		ReDim strWords(0) As String
 	'PROCESSING:
 		'Separate the words in the command:
-			Seperate_Words(strWords(), Text_Command)
+			Separate_Words(strWords(), Text_Command)
 		'If there are words in the command...
 			If strWords(0) <> "" Then
-				'Intepret the command
-					Intepret_Command(udtTemporaryCommand, strWords())
+				'Interpret the command
+					Interpret_Command(udtTemporaryCommand, strWords())
 			End If
 		'If the command contains instructions...
 			If udtTemporaryCommand.Operation <> "" Then
 				Print UBound(Commands)
 				udtTemporaryCommand.Original = Text_Command
-				Print Chr(34) + udtTemporaryCommand.Operation + Chr(34)
+				Print Chr$(34) + udtTemporaryCommand.Operation + Chr$(34)
 				'If the first command is blank...
 					If Filter(Commands(0).Operation, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") = "" Then
 						'Add the command to the first position in the array:
@@ -271,9 +271,9 @@ Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
 			End If
 End Sub
 
-Sub Seperate_Words (Words() As String, Text_Command As String)
+Sub Separate_Words (Words() As String, Text_Command As String)
 	'SUMMARY:
-		'[Seperate_Words] .
+		'[Separate_Words] .
 	'INPUT:
 		'Words():
 		'Text_Command:
@@ -358,13 +358,13 @@ Sub Initialize_Command (Temporary_Command As TTLCommand)
 		Temporary_Command.Path = ""
 		Temporary_Command.Add = ""
 		Temporary_Command.Find = ""
-		Temporary_Command.Precedant = ""
-		Temporary_Command.Antecedant = ""
+		Temporary_Command.Precedent = ""
+		Temporary_Command.Antecedent = ""
 End Sub
 
-Sub Intepret_Command (Temporary_Command As TTLCommand, Command_Words() As String)
+Sub Interpret_Command (Temporary_Command As TTLCommand, Command_Words() As String)
 	'SUMMARY:
-		'[Intepret_Command] .
+		'[Interpret_Command] .
 	'INPUT:
 		'Temporary_Command:
 		'Command_Words():
@@ -622,7 +622,7 @@ Sub Validate_Command (Words() As String)
 						Case "FIRST"
 						Case "ONCE"
 						Case Else
-							Print "Error 0000: Unrecognized word " + Words(intWord)
+							Print "Error 0000: Unrecognised word " + Words(intWord)
 							End
 					End Select
 				End If
@@ -646,11 +646,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Operation = "INCLUDE"
 					Temporary_Command.Path = Command_Words(1)
 				Else
-					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1)
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
 					End
 				End If
 			Case 2
-				Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+				Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
 				End
 			Case 3
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE Then
@@ -663,7 +663,7 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						End
 					End If
 				Else
-					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 					End
 				End If
 			Case 4
@@ -672,35 +672,35 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Find = Command_Words(1)
 					Temporary_Command.Add = Command_Words(3)
 				Else
-					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
 					End
 				End If
 			Case 5
-				Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
+				Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
 				End
 			Case 6
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "AFTER" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
 					Temporary_Command.Operation = "REPLACESUBSEQUENT"
 					Temporary_Command.Find = Command_Words(2)
 					Temporary_Command.Add = Command_Words(6)
-					Temporary_Command.Precedant = Command_Words(4)
+					Temporary_Command.Precedent = Command_Words(4)
 				Else
-					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
 					End
 				End If
 			Case 7
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "ALL" And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "BETWEEN" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "AND" And Substring(Command_Words(7)) = TRUE Then
 					Temporary_Command.Operation = "REPLACEBETWEEN"
 					Temporary_Command.Add = Command_Words(3)
-					Temporary_Command.Precedant = Command_Words(5)
-					Temporary_Command.Antecedant = Command_Words(7)
+					Temporary_Command.Precedent = Command_Words(5)
+					Temporary_Command.Antecedent = Command_Words(7)
 				ElseIf Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "BETWEEN" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "AND" And Substring(Command_Words(7)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
 						Temporary_Command.Operation = "REPLACEIFBETWEEN"
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(3)
-						Temporary_Command.Precedant = Command_Words(5)
-						Temporary_Command.Antecedant = Command_Words(7)
+						Temporary_Command.Precedent = Command_Words(5)
+						Temporary_Command.Antecedent = Command_Words(7)
 					Else
 						Print "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
 						End
@@ -708,14 +708,14 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 				ElseIf Command_Words(0) = "REPLACE" And Command_Words(1) = "ALL" And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "FROM" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "TO" And Substring(Command_Words(7)) = TRUE Then
 					Temporary_Command.Operation = "REPLACEFROM"
 					Temporary_Command.Add = Command_Words(3)
-					Temporary_Command.Precedant = Command_Words(5)
-					Temporary_Command.Antecedant = Command_Words(7)
+					Temporary_Command.Precedent = Command_Words(5)
+					Temporary_Command.Antecedent = Command_Words(7)
 				Else
-					Print "Error 0000: Unrecognized Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
 					End
 				End If
 			Case Else
-				Print "Error 0000: Unrecognized Command"
+				Print "Error 0000: Unrecognised Command"
 				End
 		End Select
 End Sub
@@ -782,7 +782,7 @@ End Function
 
 Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 	'SUMMARY:
-		'[Execute_Command] translates a scripted TTL command to a funciton call to [String Manipulation.bas].
+		'[Execute_Command] translates a scripted TTL command to a function call to [String Manipulation.bas].
 	'INPUT:
 		'TTLCommand: The TTL script command to be executed.
 		'Text: The input string; the text that's being manipulated.
@@ -793,13 +793,13 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 			Case "REPLACEONCE"
 				Text = Replace_Once(Text, Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEBETWEEN"
-				Text = Replace_Between(Text, Interior_Characters(TTLCommand.Precedant), Interior_Characters(TTLCommand.Antecedant), Interior_Characters(TTLCommand.Add))
+				Text = Replace_Between(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEIFBETWEEN"
-				Text = Replace_If_Between(Text, Interior_Characters(TTLCommand.Precedant), Interior_Characters(TTLCommand.Antecedant), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+				Text = Replace_If_Between(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEFROM"
-				Text = Replace_From(Text, Interior_Characters(TTLCommand.Precedant), Interior_Characters(TTLCommand.Antecedant), Interior_Characters(TTLCommand.Add))
+				Text = Replace_From(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACESUBSEQUENT"
-				Text = Replace_Subsequent (Text, Interior_Characters(TTLCommand.Precedant), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+				Text = Replace_Subsequent (Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 		End Select
 End Sub
 

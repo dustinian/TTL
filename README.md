@@ -5,13 +5,13 @@
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 * **Author**: Dustinian Camburides
 * **Platform**: FreeBASIC (www.freebasic.net)
-* **Revision**: 2.3
-* **Updated**: 6/16/2015
+* **Revision**: 2.4
+* **Updated**: 6/18/2015
 
 ##Downloads
 
-* **Compiled Intepreter**: ttl.exe
-* **Source Code**: text_transformation_language.zip
+* **Compiled Interpreter**: [ttl.exe](http://www.dustinian.com/_downloads/ttl.exe)
+* **Source Code**: [text_transformation_language.zip](http://www.dustinian.com/_downloads/text_transformation_language.zip)
 
 ##Interact
 
@@ -32,14 +32,14 @@ Use the below commands to transform your input text into your output text.
 	* Replaces every instance of "find" with "add," but only once per instance of "find." This function is **not recursive**. This is useful if you want to do a replace, but your "add" contains your "find." Something like:
 		* `REPLACE "</p>" WITH "</p>" + NEWLINE ONCE`
 * `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"`
-	* This replaces "find" with "add," but only when "find" appears between "precedant" and "antecedant." In other words, if you wanted to replace all the NEWLINEs with spaces but only inside of a table cell, you might say:
+	* This replaces "find" with "add," but only when "find" appears between "precedent" and "antecedent." In other words, if you wanted to replace all the NEWLINEs with spaces but only inside of a table cell, you might say:
 		*`REPLACE NEWLINE WITH " " BETWEEN "<td>" AND "</td>"`
 * `REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"`
-	* This replaces everything between the "precendant" and the "antecedant," but **excludes** the "precedant" and "antecedant" from the replacement. In other words, after the operation is complete, you would see the "precedant," the "add," and the "antecedant."
+	* This replaces everything between the "precedent" and the "antecedent," but **excludes** the "precedent" and "antecedent" from the replacement. In other words, after the operation is complete, you would see the "precedent," the "add," and the "antecedent."
 * `REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"`
-	* This replaces everything between the "precendant" and the "antecedant," but **includes** the "precedant" and "antecedant." In other words, after the operation is complete, you would see only the "add." The "precedant" and "antecedant" would gone.
+	* This replaces everything between the "precedent" and the "antecedent," but **includes** the "precedent" and "antecedent." In other words, after the operation is complete, you would see only the "add." The "precedent" and "antecedent" would gone.
 * `REPLACE FIRST "find" AFTER "precedent" WITH "add"`
-	* This replaces only the first instance of "find" after the "precedant" with "add." Example: You run an operation to replace some of your p tags with h2 tags in an HTML document. You'd naturally want to replace some of the /p tags with /h2 tags... but how can you target only those /p tags that follow an h2 tag? This operation does that.
+	* This replaces only the first instance of "find" after the "precedent" with "add." Example: You run an operation to replace some of your p tags with h2 tags in an HTML document. You'd naturally want to replace some of the /p tags with /h2 tags... but how can you target only those /p tags that follow an h2 tag? This operation does that.
 
 ###Modules
 
@@ -57,7 +57,7 @@ Use the "CHR()" operator to look for characters that you can't easily type into 
 
 ###Tokens
 
-Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable. Tokens must appear OUTSIDE quotation marks to be intepreted correctly.
+Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable. Tokens must appear OUTSIDE quotation marks to be interpreted correctly.
 
 Token | Chr
 ------|----
@@ -88,15 +88,16 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 1. Using the syntax above, enter your commands into a plain-text file.
 2. Run ttl.exe; use the command-line parameters to tell the interpreter where to find:
 	* The command file
-	* The input file
-	* The output file
+	* The input file(s)
 
-##Command-Line Parameters
+##Sample Command-Lines
 
-* `ttl.exe script_path.ttl input_path.txt output_path.txt`
+* Transform Single File: `ttl.exe script_path.ttl input_path.txt`
+* Transform Multiple Files: `ttl.exe script_path.ttl *.xml
 
 ##Revision History
 
+* **2.4**: TTL can now target multiple files!
 * **2.3**: Added [Replace_Once] command.
 * **2.2**: Added on-screen "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
 * **2.1**: Added token support (TAB, LINEBREAK, QUOTE, etc.), and began compiling in -lang FB (vs. QB).
@@ -115,7 +116,6 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 ##Planned Enhancements
 
 ###Major
-* **Target Folder**: The ability to target all the files in a folder and its sub-folders (filtered by extension).
 * **Debug Logs**: The ability to log transformations in progress at different levels of detail.
 * **Text User-Interface (TUI)**: A user interface assembled from ASCII characters (similar to the QB IDE).
 * **Graphical User-Interface (GUI)**: A windows-style user interface (buttons, menus, scroll bars, etc.).
@@ -130,4 +130,4 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 
 * **Script**: [eyrie_script.ttl](http://www.dustinian.com/_downloads/eyrie_script.ttl), written to convert Gryphon's stories at Eyrie Productions, Unlimited.
 * **Input**: [eyrie_input.txt](http://www.dustinian.com/_downloads/eyrie_input.txt), part I of "The Fulcrum of Fate" by Gryphon.
-* **Command Line**: ttl.exe eyrie_script.ttl eyrie_input.txt eyrie_output.html
+* **Command Line**: ttl.exe eyrie_script.ttl eyrie_input.txt
