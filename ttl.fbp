@@ -1,4 +1,4 @@
-[Project]
+﻿[Project]
 Version=3
 Description=A scripting language that transforms text-based files.
 Api=fb (FreeBASIC)

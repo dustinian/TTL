@@ -1,4 +1,4 @@
-'---------------------------------------------------------------------------------------------------
+﻿'---------------------------------------------------------------------------------------------------
 'TEXT TRANSFORMATION LANGUAGE (TTL)
 '---------------------------------------------------------------------------------------------------
 'SUMMARY
@@ -20,6 +20,8 @@
 		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
 		'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
 		'REPLACE FIRST "find" AFTER "precedent" WITH "add"
+		'PREPEND "add"
+		'APPEND "add"
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
 '---------------------------------------------------------------------------------------------------
@@ -52,6 +54,7 @@
 	'ttl.exe script_path.ttl *.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.5: Added "APPEND" and "PREPEND" commands to add text at the end or beginning of the input file!
 	'2.4: TTL can now transform multiple files!
 	'2.3: Added [Replace_Once] command.
 	'2.2: Added "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
@@ -70,13 +73,12 @@
 '---------------------------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
-		'Append/Prepend: The ability to append text from another file to the beginning or end of the current file.
-		'Debug Logs: The ability to log transformations in progress at different levels of detail.
+		'Wildcards: Symbols For "wildcard" searches (*, #, etc.).
 		'Text User-Interface (TUI): A user interface assembled from ASCII characters (similar to the QB IDE).
 		'Graphical User-Interface (GUI): A windows-style user interface (buttons, menus, scroll bars, etc.).
 		'Syntax Definitions: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 	'Minor:
-		'Wildcards: Symbols For "wildcard" searches (*, #, etc.).
+		'Debug Logs: The ability to log transformations in progress at different levels of detail.
 '---------------------------------------------------------------------------------------------------
 'LIBRARIES
 	#Include "string array.bi"
@@ -621,6 +623,8 @@ Sub Validate_Command (Words() As String)
 						Case "TO"
 						Case "FIRST"
 						Case "ONCE"
+						Case "APPEND"
+						Case "PREPEND"
 						Case Else
 							Print "Error 0000: Unrecognised word " + Words(intWord)
 							End
@@ -650,8 +654,15 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					End
 				End If
 			Case 2
-				Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
-				End
+				If Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE Then
+					Temporary_Command.Operation = "APPEND"
+					Temporary_Command.Add = Command_Words(1)
+				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE Then
+					Temporary_Command.Operation = "PREPEND"
+					Temporary_Command.Add = Command_Words(1)
+				Else
+					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+				End If
 			Case 3
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
@@ -800,6 +811,10 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 				Text = Replace_From(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACESUBSEQUENT"
 				Text = Replace_Subsequent (Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+			Case "PREPEND"
+				Text = Interior_Characters(TTLCommand.Add) + Text
+			Case "APPEND"
+				Text = Text + Interior_Characters(TTLCommand.Add)
 		End Select
 End Sub
 

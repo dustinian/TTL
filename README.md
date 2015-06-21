@@ -5,13 +5,14 @@
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 * **Author**: Dustinian Camburides
 * **Platform**: FreeBASIC (www.freebasic.net)
-* **Revision**: 2.4
-* **Updated**: 6/18/2015
+* **Revision**: 2.5
+* **Updated**: 6/21/2015
 
 ##Downloads
 
 * **Compiled Interpreter**: [ttl.exe](http://www.dustinian.com/_downloads/ttl.exe)
 * **Source Code**: [text_transformation_language.zip](http://www.dustinian.com/_downloads/text_transformation_language.zip)
+	* Compile with the following command line: `fbc -lang fb -s console "ttl.bas"`
 
 ##Interact
 
@@ -40,6 +41,10 @@ Use the below commands to transform your input text into your output text.
 	* This replaces everything between the "precedent" and the "antecedent," but **includes** the "precedent" and "antecedent." In other words, after the operation is complete, you would see only the "add." The "precedent" and "antecedent" would gone.
 * `REPLACE FIRST "find" AFTER "precedent" WITH "add"`
 	* This replaces only the first instance of "find" after the "precedent" with "add." Example: You run an operation to replace some of your p tags with h2 tags in an HTML document. You'd naturally want to replace some of the /p tags with /h2 tags... but how can you target only those /p tags that follow an h2 tag? This operation does that.
+* `PREPEND "add"`
+	* Adds text to the beginning of the input file.
+* `APPEND "add"`
+	* Adds text to the end of the input file.
 
 ###Modules
 
@@ -97,6 +102,7 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 
 ##Revision History
 
+* **2.5**: Added the "Prepend" and "Append" commands!
 * **2.4**: TTL can now target multiple files!
 * **2.3**: Added [Replace_Once] command.
 * **2.2**: Added on-screen "log"; TTL outputs the original command before it executes. This helps when debugging TTL scripts.
@@ -116,15 +122,14 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 ##Planned Enhancements
 
 ###Major
-* **Debug Logs**: The ability to log transformations in progress at different levels of detail.
+* **Wild Cards**: Symbols For "wild card" searches (*, #, etc.).
 * **Text User-Interface (TUI)**: A user interface assembled from ASCII characters (similar to the QB IDE).
 * **Graphical User-Interface (GUI)**: A windows-style user interface (buttons, menus, scroll bars, etc.).
 * **Syntax Definitions**: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
-* **Wild Cards**: Symbols For "wild card" searches (*, #, etc.).
 
 ###Minor
 
-* **Prepend/Append**: The ability to append text from another file to the beginning or end of the current file.
+* **Debug Logs**: The ability to log transformations in progress at different levels of detail.
 
 ##Sample Files
 
