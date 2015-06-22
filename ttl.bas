@@ -1,12 +1,12 @@
-﻿'---------------------------------------------------------------------------------------------------
+'---------------------------------------------------------------------------------------------------
 'TEXT TRANSFORMATION LANGUAGE (TTL)
 '---------------------------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.4
-	'Updated: 6/18/2015
+	'Revision: 2.5
+	'Updated: 6/21/2015
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
@@ -97,6 +97,7 @@
 	End Type
 '---------------------------------------------------------------------------------------------------
 'PROCEDURES:
+Declare Sub Main()
 	Declare Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
 		Declare Sub Load_Script (Words() As String, Commands() As TTLCommand)
 			Declare Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
@@ -120,14 +121,15 @@
 	Const TRUE = -1 'Allows integers to be "TRUE" (compatibility with other BASIC dialects).
 	Const FALSE = 0 'Allows integers to be "FALSE" (compatibility with other BASIC dialects).
 '---------------------------------------------------------------------------------------------------
-'GLOBAL VARIABLES:
-	Dim strCommandLineParameter As String 'The command-line parameters that TTL was run with.
-	Dim udtCommands() As TTLCommand 'The dynamic array of [Commands] that will be assembled and executed.
-	Dim intInputFile As Integer
-	Dim strInputText As String 'The input text the script will run against.
-	Dim strFiles() As String 'The files in the target folder.
+'GLOBAL CODE:
+	Main()
+	End
 '---------------------------------------------------------------------------------------------------
-'MAIN PROCEDURE:
+Sub Main
+	'VARIABLES:
+		Dim udtCommands() As TTLCommand 'The dynamic array of [Commands] that will be assembled and executed.
+		Dim intInputFile As Integer
+		Dim strInputText As String 'The input text the script will run against.
 	'INITIALIZE:
 		ReDim udtCommands(0) As TTLCommand
 	'PROCESSING:
@@ -136,13 +138,17 @@
 				'If the command-line arguments are not blank:
 					If Command$(1) <> "" And Command$(2) <> "" Then
 						'Parse the script:
-							Print "LOADING/PARSING SCRIPT>>>"
+							Print "LOADING/PARSING SCRIPT>>> " & Command$(1)
 							Parse_Script(udtCommands(), Command$(1))
 						'Initialize:
 							intInputFile = 2
 						'While there is a command-line argument (file name) to process...
 							While Command$(intInputFile) <> ""
 								'Load the input text:
+									Print
+									Print "=============================================="
+									Print "Text Transformation Language (TTL)"
+									Print "----------------------------------------------"
 									Print "LOADING FILE>>> " & Command$(intInputFile)
 									strInputText = Input_File(Command$(intInputFile))
 								'Execute the script:
@@ -155,12 +161,16 @@
 									intInputFile = intInputFile + 1
 							Wend
 					Else
-						Print "ERROR: CANNOT PARSE COMMAND-LINE ARGUMENTS..."
+						Print, "Error: CANNOT PARSE COMMAND-LINE ARGUMENTS..."
 					End If
 			Else
-				Print "ERROR: NO COMMAND-LINE PARAMETERS..."
+				Print, "TTL: Text Transformation Language v2.5"
+				Print, "Last Updated 6/21/2015"
+				Print, "Use command-line parameters to identify the script and target."
+				Print
+				Print,,"ttl.exe script.ttl target.txt"
 			End If
-		End
+End Sub
 
 Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
 	'SUMMARY:
@@ -230,7 +240,7 @@ Sub Load_Script (Words() As String, Commands() As TTLCommand)
 				'Next [line]...
 					Next intLine
 			Else
-				Print "File Error 0001: The file is blank."
+				Print, "    File Error 0001: The file is blank."
 				End
 			End If
 End Sub
@@ -257,9 +267,7 @@ Sub Parse_Command (Commands() As TTLCommand, Text_Command As String)
 			End If
 		'If the command contains instructions...
 			If udtTemporaryCommand.Operation <> "" Then
-				Print UBound(Commands)
-				udtTemporaryCommand.Original = Text_Command
-				Print Chr$(34) + udtTemporaryCommand.Operation + Chr$(34)
+				udtTemporaryCommand.Original = Trim$(Filter$(Text_Command, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxys0123456789~`!@#$%^&*()-_=+[]{}\|;:'""<>,./?"))
 				'If the first command is blank...
 					If Filter(Commands(0).Operation, "ABCDEFGHIJKLMNOPQRSTUVWXYZ") = "" Then
 						'Add the command to the first position in the array:
@@ -494,12 +502,11 @@ Sub Transform_CHR (Command_Words() As String)
 												'Replace the word with the appropriate ASCII character:
 													Command_Words(intWord) = Chr$(34) + Chr$(intCharacter) + Chr$(34)
 											Else
-												Print "Syntax Error 0001: The CHR() number is out of range."
+												Print, "Syntax Error 0001: The CHR() number is out of range."
 												End
 											End If
 									Else
-										Print "Syntax Error 0000: The CHR() command is not correctly formatted."
-										Print Command_Words(intWord)
+										Print, "Syntax Error 0000: The CHR() command is not correctly formatted."
 										End
 									End If
 							End If
@@ -582,11 +589,11 @@ Sub Combine_Sub_Strings (Command_Words() As String)
 										'Remove blank words:
 											Remove_Blank_Words(Command_Words())
 									Else
-										Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+										Print, "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
 										End
 									End If
 							Else
-								Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+								Print, "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
 								End
 							End If
 					Else
@@ -626,7 +633,7 @@ Sub Validate_Command (Words() As String)
 						Case "APPEND"
 						Case "PREPEND"
 						Case Else
-							Print "Error 0000: Unrecognised word " + Words(intWord)
+							Print, "Error 0000: Unrecognised word " + Words(intWord)
 							End
 					End Select
 				End If
@@ -643,26 +650,24 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 	'PROCESSING:
 		Select Case UBound(Command_Words)
 			Case 0
-				Print "Error 0000: Incomplete command " + Command_Words(0)
+				Print, "Error 0000: Incomplete command " + Command_Words(0)
 				End
 			Case 1
 				If Command_Words(0) = "INCLUDE" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "INCLUDE"
 					Temporary_Command.Path = Command_Words(1)
-				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
-					End
-				End If
-			Case 2
-				If Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE Then
+				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "APPEND"
 					Temporary_Command.Add = Command_Words(1)
 				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "PREPEND"
 					Temporary_Command.Add = Command_Words(1)
 				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
+					End
 				End If
+			Case 2
+				Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
 			Case 3
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
@@ -670,11 +675,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(3)
 					Else
-						Print "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+						Print, "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 						End
 					End If
 				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 					End
 				End If
 			Case 4
@@ -683,11 +688,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Find = Command_Words(1)
 					Temporary_Command.Add = Command_Words(3)
 				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
 					End
 				End If
 			Case 5
-				Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
+				Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
 				End
 			Case 6
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "AFTER" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
@@ -696,7 +701,7 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Add = Command_Words(6)
 					Temporary_Command.Precedent = Command_Words(4)
 				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
 					End
 				End If
 			Case 7
@@ -713,7 +718,7 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Precedent = Command_Words(5)
 						Temporary_Command.Antecedent = Command_Words(7)
 					Else
-						Print "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+						Print, "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
 						End
 					End If
 				ElseIf Command_Words(0) = "REPLACE" And Command_Words(1) = "ALL" And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "FROM" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "TO" And Substring(Command_Words(7)) = TRUE Then
@@ -722,11 +727,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Precedent = Command_Words(5)
 					Temporary_Command.Antecedent = Command_Words(7)
 				Else
-					Print "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
 					End
 				End If
 			Case Else
-				Print "Error 0000: Unrecognised Command"
+				Print, "Error 0000: Unrecognised Command"
 				End
 		End Select
 End Sub
@@ -782,7 +787,7 @@ Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 		'For each [command]...
 			For intCommand = LBound(Commands) TO UBound(Commands)
 				'Output what you're doing:
-					Print, "Running: " + Commands(intCommand).Original
+					Print, Trim$((Left$(Commands(intCommand).Original, 57)))
 				'Execute the command:
 					Execute_Command(Commands(intCommand), Text)
 		'Next [command]...

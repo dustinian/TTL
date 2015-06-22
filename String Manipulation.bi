@@ -1,16 +1,18 @@
-﻿'---------------------------------------------------------------------------------------------------
+'---------------------------------------------------------------------------------------------------
 'STRING MANIPULATION
 '---------------------------------------------------------------------------------------------------
 'SUMMARY:
 	'Purpose: A library of custom functions that transform strings.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.1
-	'Updated: 6/16/2015
+	'Revision: 2.2
+	'Updated: 6/21/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY'
+	'2.2: Fixed:
+				'Infinite loop in [Replace_Subsequent].
 	'2.1: Fixed:
-				'Infine loop in [Replace_Between] and [Replace_From] when [Antecedent] wasn't found.
+				'Infinite loop in [Replace_Between] and [Replace_From] when [Antecedent] wasn't found.
 			'Added:
 				'[Replace_Once] function to facilitate simple find-and-replace with no regard to recursion.
 	'2.0: Fixed:
@@ -235,7 +237,7 @@ Function Replace_Subsequent (ByVal Text As String, ByVal Precedent As String, By
 		'While the [Precedent] appears in the [Text]...
 			While lngStart
 				'Locate the [Find] sub-string:
-					lngLocation = Instr((lngStart + Len(Precedent) - 1), Text, Find)
+					lngLocation = Instr(lngStart, Text, Find)
 				'If [Find] appears in the [Text]...
 					If lngLocation Then
 						'Locate the last character of [Find]:
@@ -245,9 +247,11 @@ Function Replace_Subsequent (ByVal Text As String, ByVal Precedent As String, By
 						'Increment the start point:
 							lngStart = lngLocation + Len(Substitute) + 1
 					Else
-				'Find the next instance:
-							lngStart = Instr(lngStart, Text, Precedent)
+						'Increment the start point:
+							lngStart = lngStart + Len(Precedent)
 					End If
+				'Find the next instance:
+					lngStart = InStr(lngStart, Text, Precedent)
 		'Next instance of [Precedent]...
 			Wend
 	'OUTPUT:

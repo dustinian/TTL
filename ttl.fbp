@@ -1,29 +1,37 @@
-﻿[Project]
+[Project]
 Version=3
-Description=A scripting language that transforms text-based files.
+Description=Text Transformation Language
 Api=fb (FreeBASIC)
+Grouping=1
+AddMainFiles=1
+AddModuleFiles=1
+ResExport=
+CompileIfNewer=0
+IncVersion=0
+RunCmd=0
 [Make]
 Current=1
-1=QB Console,fbc -lang fb -s console
+1=Windows Console,fbc -s console
 Recompile=2
 Module=Module Build,fbc -c
+Output=
+Run=
+Delete=
 [TabOrder]
 TabOrder=1,2,3,4
 [File]
-1=ttl.bas
-2=String Manipulation.bi
+1=Text File Input Output.bi
+2=ttl.bas
 3=String Array.bi
-4=Text File Input Output.bi
+4=String Manipulation.bi
+Main=2
 [BreakPoint]
-2=
 1=
+2=
 3=
 4=
-1001=
-1002=
-1003=
 [FileInfo]
-2=0,288,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-1=0,194,1,568524801,33558498,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-3=0,46,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-4=0,11,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,247,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
