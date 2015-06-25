@@ -28,7 +28,7 @@
 Use the below commands to transform your input text into your output text.
 
 * `REPLACE "find" WITH "add"`
-	* Replaces every instance of "find" with "add." This function is **recursive** (it will keep finding "find" over and over again until "find" is gone). Therefore, this function will throw an error is "add" contains "find," because this command would never finish.
+	* Replaces every instance of "find" with "add." This function is **recursive** (it will keep finding "find" over and over again until "find" is gone). Therefore, this function will throw an error if "add" contains "find," because this command would never finish.
 * `REPLACE "find" WITH "add" ONCE`
 	* Replaces every instance of "find" with "add," but only once per instance of "find." This function is **not recursive**. This is useful if you want to do a replace, but your "add" contains your "find." Something like:
 		* `REPLACE "</p>" WITH "</p>" + NEWLINE ONCE`
@@ -98,7 +98,7 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 ##Sample Command-Lines
 
 * Transform Single File: `ttl.exe script_path.ttl input_path.txt`
-* Transform Multiple Files: `ttl.exe script_path.ttl *.xml
+* Transform Multiple Files: `ttl.exe script_path.ttl *.xml`
 
 ##Revision History
 
