@@ -5,10 +5,13 @@
 	'Purpose: A library of custom functions that transform strings.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.2
-	'Updated: 6/21/2015
+	'Revision: 2.3
+	'Updated: 6/30/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY'
+	'2.3: Fixed:
+				'Logic error where [Replace_Between] would miss back-to-back instances of [Precedent] to [Antecedent].
+				'Speed issue where [Replace] would start over at the beginning of the string rather than at the last location. Hopefully this will speed up [Replace] commands.
 	'2.2: Fixed:
 				'Infinite loop in [Replace_Subsequent].
 	'2.1: Fixed:
@@ -102,7 +105,7 @@ Function Replace (ByVal Text As String, ByVal Find As String, ByVal Substitute A
 				'Return the substring:
 					Text = strBefore + Substitute + strAfter
 				'Locate the Next instance of [Find]:
-					lngLocation = Instr(1, Text, Find)
+					lngLocation = Instr(lngLocation, Text, Find)
 		'Next instance of [Find]...
 			Wend
 	'OUTPUT:
@@ -132,7 +135,7 @@ Function Replace_Once (ByVal Text As String, ByVal Find As String, ByVal Substit
 				'Return the substring:
 					Text = strBefore + Substitute + strAfter
 				'Locate the Next instance of [Find]:
-					lngLocation = Instr(lngLocation + Len(Substitute) + 1, Text, Find)
+					lngLocation = Instr(lngLocation + Len(Substitute), Text, Find)
 		'Next instance of [Find]...
 			Wend
 	'OUTPUT:
@@ -206,7 +209,7 @@ Function Replace_Between (ByVal Text As String, ByVal Precedent As String, ByVal
 						'Replace the text:
 							Text = Left$(Text, (lngStart + Len(Precedent) - 1)) + Substitute + Right$(Text, (Len(Text) - lngStop))
 						'Increment the start point to after the replacement:
-							lngStart = lngStart + Len(Precedent) + Len(Substitute) + Len(Antecedent) + 1
+							lngStart = lngStart + Len(Precedent) + Len(Substitute) + Len(Antecedent)
 					Else
 						'Increment the start point if [Antecedent] is not found:
 							lngStart = lngStart + Len(Precedent)
