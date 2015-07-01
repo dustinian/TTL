@@ -5,10 +5,13 @@
 	'Purpose: A library of custom subroutines and functions to load text to/from a file.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 1.4
-	'Updated: 6/15/2015
+	'Revision: 1.6
+	'Updated: 7/1/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'1.6: Updates
+			'Removed [List_Folder_Contents] since it's no longer used.
+			'Removed "If...Then..." from [Input File] to speed it up.
 	'1.5: Updates
 			'Reverted changes from 1.4. It was faster, but it created too many encoding problems.
 	'1.4: Updated
@@ -56,18 +59,14 @@ Function Input_File (ByVal Path As String) As String
 				'Open the input file:
 					intFileNumber = FreeFile
 					OPEN Path For Input AS #intFileNumber
+				'Initialize:
+					Line Input #intFileNumber, strFileText
 				'While not at the end of the file...
 					While Not EOF(intFileNumber)
 						'Input a line of text:
 							Line Input #intFileNumber, strLine
-						'If the line is not blank...
-							If Len(strFileText) > 0 Then
-								'Add the [line feed] and [carriage return] characters and the [line] to the [file text]:
-									strFileText = strFileText & Chr$(13) & Chr$(10) & strLine
-							Else
-								'Add the new line to the file text:
-									strFileText = strLine
-							End If
+						'Add the [line feed] and [carriage return] characters and the [line] to the [file text]:
+							strFileText = strFileText & Chr$(13) & Chr$(10) & strLine
 				'Next line...
 					Wend
 				'Close the input file:
@@ -93,39 +92,4 @@ Sub Output_File (ByVal Text As String, ByVal Path As String)
 			Print #intFileNumber, Text
 		'Close the output file:
 			Close #intFileNumber
-End Sub
-
-Sub List_Folder_Contents (Files() as String, ByVal Path as String, ByVal Extension as String = "*")
-	'SUMMARY:
-		'[List_Folder_Contents] returns a list of all the files in the [Path] with the [Extension].
-	'INPUT:
-		'Path: The folder location to be searched for files.
-		'Extension: The extension to look for in the [Path].
-	'OUTPUT:
-		'Files(): The output array, where the separate files are stored.
-	'VARIABLES:
-		Dim strSlash as String 'The OS-specific slash.
-		Dim strFileName as String 'The name of the current file in the folder.
-		Dim intFiles as Integer 'The number of files found in the folder.
-	'PROCESSING:
-		'Initialize:
-			intFiles = 0
-			#ifdef __FB_LINUX__
-			strSlash = "/"
-			#else
-			strSlash = "\"
-			#endif
-		'Get the first file in the folder:
-			strFileName = Dir(Path & strSlash & "*." & Extension, &h21)
-		'While there is a file to process:
-			While Len(strFileName) > 0
-				'If the file is not [.] or [..]:
-					If (strFileName <> ".") And (strFileName <> "..") Then
-						'Add a file to the [Files] array:
-							intFiles = intFiles + 1
-							ReDim Preserve Files(intFiles) As String
-							Files(intFiles) = strFileName
-					End If
-				strFileName = Dir()
-			Wend
 End Sub
