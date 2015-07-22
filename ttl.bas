@@ -5,8 +5,8 @@
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.5
-	'Updated: 6/21/2015
+	'Revision: 2.6
+	'Updated: 7/22/2015
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
@@ -54,6 +54,7 @@
 	'ttl.exe script_path.ttl *.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.6: Updated the screen output.
 	'2.5: Added "APPEND" and "PREPEND" commands to add text at the end or beginning of the input file!
 	'2.4: TTL can now transform multiple files!
 	'2.3: Added [Replace_Once] command.
@@ -143,12 +144,15 @@ Sub Main
 						'Initialize:
 							intInputFile = 2
 						'While there is a command-line argument (file name) to process...
+							Print
+							Print "============================================================"
+							Print "Text Transformation Language (TTL) v2.6"
+							Print "------------------------------------------------------------"
+							Print "www.github.com/dustinian/ttl"
 							While Command$(intInputFile) <> ""
 								'Load the input text:
-									Print
-									Print "=============================================="
-									Print "Text Transformation Language (TTL)"
-									Print "----------------------------------------------"
+									Print "------------------------------------------------------------"
+									Print Date & " " & Time
 									Print "LOADING FILE>>> " & Command$(intInputFile)
 									strInputText = Input_File(Command$(intInputFile))
 								'Execute the script:
@@ -157,6 +161,7 @@ Sub Main
 								'Output the output text:
 									Print "OUTPUTTING FILE>>> " & Command$(intInputFile)
 									Output_File(strInputText, Command$(intInputFile))
+									Print Date & " " & Time
 								'Increment the command-line argument:
 									intInputFile = intInputFile + 1
 							Wend
@@ -787,7 +792,7 @@ Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 		'For each [command]...
 			For intCommand = LBound(Commands) TO UBound(Commands)
 				'Output what you're doing:
-					Print, Trim$((Left$(Commands(intCommand).Original, 57)))
+					Print "  " & Time & ": " & Trim$((Left$(Commands(intCommand).Original, 67)))
 				'Execute the command:
 					Execute_Command(Commands(intCommand), Text)
 		'Next [command]...
