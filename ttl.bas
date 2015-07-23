@@ -22,6 +22,11 @@
 		'REPLACE FIRST "find" AFTER "precedent" WITH "add"
 		'PREPEND "add"
 		'APPEND "add"
+		'DELETE ALL FROM "precedent" TO "antecedent"
+		'DELETE ALL BETWEEN "precedent" AND "antecedent"
+		'PREPEND "add" TO "find"
+		'APPEND "add" TO "find"
+		'SURROUND "find" with "add" and "add"
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
 '---------------------------------------------------------------------------------------------------
@@ -642,6 +647,8 @@ Sub Validate_Command (Words() As String)
 						Case "ONCE"
 						Case "APPEND"
 						Case "PREPEND"
+						Case "DELETE"
+						Case "SURROUND"
 						Case Else
 							Print, "Error 0000: Unrecognised word " + Words(intWord)
 							End
@@ -679,6 +686,8 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 			Case 2
 				Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
 			Case 3
+				'PREPEND "add" TO "find"
+				'APPEND "add" TO "find"
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
 						Temporary_Command.Operation = "REPLACE"
@@ -688,6 +697,14 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Print, "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 						End
 					End If
+				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "TO" And Substring(Command_Words(3)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEONCE"
+						Temporary_Command.Find = Command_Words(1)
+						Temporary_Command.Add = Command_Words(1) & Command_Words(3)
+				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "TO" And Substring(Command_Words(3)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEONCE"
+						Temporary_Command.Find = Command_Words(1)
+						Temporary_Command.Add = Command_Words(3) & Command_Words(1)
 				Else
 					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 					End
@@ -702,8 +719,24 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					End
 				End If
 			Case 5
-				Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
-				End
+				If Command_Words(0) = "DELETE" And Command_Words(1) = "ALL" And Command_Words(2) = "FROM" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "TO" And Substring(Command_Words(5)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEFROM"
+						Temporary_Command.Precedent = Command_Words(3)
+						Temporary_Command.Antecedent = Command_Words(5)
+						Temporary_Command.Add = ""
+				ElseIf Command_Words(0) = "DELETE" And Command_Words(1) = "ALL" And Command_Words(2) = "BETWEEN" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And Substring(Command_Words(5)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEBETWEEN"
+						Temporary_Command.Precedent = Command_Words(3)
+						Temporary_Command.Antecedent = Command_Words(5)
+						Temporary_Command.Add = ""
+				ElseIf Command_Words(0) = "SURROUND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And Substring(Command_Words(5)) = TRUE Then
+					Temporary_Command.Operation = "REPLACEONCE"
+					Temporary_Command.Find = Command_Words(1)
+					Temporary_Command.Add = Command_Words(3) & Command_Words(1) & Command_Words(5)
+				Else
+					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
+					End
+				End If
 			Case 6
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "AFTER" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
 					Temporary_Command.Operation = "REPLACESUBSEQUENT"
