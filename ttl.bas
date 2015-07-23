@@ -134,12 +134,18 @@ Sub Main
 	'INITIALIZE:
 		ReDim udtCommands(0) As TTLCommand
 	'PROCESSING:
+		'Print splash screen:
+			Print
+			Print "============================================================"
+			Print "Text Transformation Language (TTL) v2.6"
+			Print "------------------------------------------------------------"
+			Print "www.github.com/dustinian/ttl"
 		'If there are command-line arguments to process:
 			If Command$ <> "" Then
 				'If the command-line arguments are not blank:
 					If Command$(1) <> "" And Command$(2) <> "" Then
 						'Parse the script:
-							Print "LOADING/PARSING SCRIPT>>> " & Command$(1)
+							Print "PARSING " & Command$(1)
 							Parse_Script(udtCommands(), Command$(1))
 						'Initialize:
 							intInputFile = 2
@@ -153,28 +159,27 @@ Sub Main
 								'Load the input text:
 									Print "------------------------------------------------------------"
 									Print Date & " " & Time
-									Print "LOADING FILE>>> " & Command$(intInputFile)
+									Print "LOADING " & Command$(intInputFile)
 									strInputText = Input_File(Command$(intInputFile))
 								'Execute the script:
-									Print "EXECUTING SCRIPT>>> " & Command$(intInputFile)
+									Print "EXECUTING..."
 									strInputText = Execute_Script(udtCommands(), strInputText)
 								'Output the output text:
-									Print "OUTPUTTING FILE>>> " & Command$(intInputFile)
+									Print "OUTPUTTING " & Command$(intInputFile)
 									Output_File(strInputText, Command$(intInputFile))
 									Print Date & " " & Time
 								'Increment the command-line argument:
 									intInputFile = intInputFile + 1
 							Wend
 					Else
-						Print, "Error: CANNOT PARSE COMMAND-LINE ARGUMENTS..."
+						Print "Error: Cannot parse command-line arguments."
+						Print "Example: ttl.exe script.ttl target.txt"
 					End If
 			Else
-				Print, "TTL: Text Transformation Language v2.5"
-				Print, "Last Updated 6/21/2015"
-				Print, "Use command-line parameters to identify the script and target."
-				Print
-				Print,,"ttl.exe script.ttl target.txt"
+				Print "Use command-line parameters to identify the script and target."
+				Print "Example: ttl.exe script.ttl target.txt"
 			End If
+	Print
 End Sub
 
 Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
@@ -792,7 +797,7 @@ Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 		'For each [command]...
 			For intCommand = LBound(Commands) TO UBound(Commands)
 				'Output what you're doing:
-					Print "  " & Time & ": " & Trim$((Left$(Commands(intCommand).Original, 67)))
+					Print "  " & Time & ": " & Trim$((Left$(Commands(intCommand).Original, 68)))
 				'Execute the command:
 					Execute_Command(Commands(intCommand), Text)
 		'Next [command]...
