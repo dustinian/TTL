@@ -5,8 +5,9 @@
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.6
-	'Updated: 7/22/2015
+	'Git: www.github.com/dustinian/ttl
+	'Revision: 2.7
+	'Updated: 7/24/2015
 '---------------------------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
@@ -27,6 +28,9 @@
 		'PREPEND "add" TO "find"
 		'APPEND "add" TO "find"
 		'SURROUND "find" with "add" and "add"
+		'DELETE "find" BETWEEN "precedent" AND "antecedent"
+		'DELETE "find" BETWEEN "precedent" AND "antecedent" ONCE
+		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
 '---------------------------------------------------------------------------------------------------
@@ -37,16 +41,12 @@
 	'TOKENS
 		'Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable
 		'.________________.____________.
-		'|	  TOKEN			|	CHR	   |
+		'|TOKEN				|	CHR	   |
 		'|------------------+----------|
 		'| TAB				|		 9 |
-		'| \T				|		 9 |
 		'| NEWLINE			|		10 |
-		'| \N				|		10 |
 		'| CARRIAGERETURN	|		13 |
-		'| \R				|		13 |
 		'| LINEBREAK		|  13 + 10 |
-		'| \R\N				|  13 + 10 |
 		'| QUOTE			|		34 |
 		''-----------------------------'
 			'Example: Replace TAB with ", "
@@ -59,6 +59,7 @@
 	'ttl.exe script_path.ttl *.txt
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.7: Added new commands.
 	'2.6: Updated the screen output.
 	'2.5: Added "APPEND" and "PREPEND" commands to add text at the end or beginning of the input file!
 	'2.4: TTL can now transform multiple files!
@@ -141,9 +142,9 @@ Sub Main
 	'PROCESSING:
 		'Print splash screen:
 			Print
-			Print "============================================================"
+			Print "================================================================================"
 			Print "Text Transformation Language (TTL) v2.6"
-			Print "------------------------------------------------------------"
+			Print "--------------------------------------------------------------------------------"
 			Print "www.github.com/dustinian/ttl"
 		'If there are command-line arguments to process:
 			If Command$ <> "" Then
@@ -155,14 +156,9 @@ Sub Main
 						'Initialize:
 							intInputFile = 2
 						'While there is a command-line argument (file name) to process...
-							Print
-							Print "============================================================"
-							Print "Text Transformation Language (TTL) v2.6"
-							Print "------------------------------------------------------------"
-							Print "www.github.com/dustinian/ttl"
 							While Command$(intInputFile) <> ""
 								'Load the input text:
-									Print "------------------------------------------------------------"
+									Print "--------------------------------------------------------------------------------"
 									Print Date & " " & Time
 									Print "LOADING " & Command$(intInputFile)
 									strInputText = Input_File(Command$(intInputFile))
@@ -177,10 +173,12 @@ Sub Main
 									intInputFile = intInputFile + 1
 							Wend
 					Else
+						Print "--------------------------------------------------------------------------------"
 						Print "Error: Cannot parse command-line arguments."
 						Print "Example: ttl.exe script.ttl target.txt"
 					End If
 			Else
+				Print "--------------------------------------------------------------------------------"
 				Print "Use command-line parameters to identify the script and target."
 				Print "Example: ttl.exe script.ttl target.txt"
 			End If
@@ -255,7 +253,7 @@ Sub Load_Script (Words() As String, Commands() As TTLCommand)
 				'Next [line]...
 					Next intLine
 			Else
-				Print, "    File Error 0001: The file is blank."
+				Print "    File Error 0001: The file is blank."
 				End
 			End If
 End Sub
@@ -517,11 +515,13 @@ Sub Transform_CHR (Command_Words() As String)
 												'Replace the word with the appropriate ASCII character:
 													Command_Words(intWord) = Chr$(34) + Chr$(intCharacter) + Chr$(34)
 											Else
-												Print, "Syntax Error 0001: The CHR() number is out of range."
+												Print "--------------------------------------------------------------------------------"
+												Print "Syntax Error 0001: The CHR() number is out of range."
 												End
 											End If
 									Else
-										Print, "Syntax Error 0000: The CHR() command is not correctly formatted."
+										Print "--------------------------------------------------------------------------------"
+										Print "Syntax Error: The CHR() command is not correctly formatted."
 										End
 									End If
 							End If
@@ -547,25 +547,13 @@ Sub Transform_Tokens (Command_Words() As String)
 								Case "TAB"
 									'Replace the word with the appropriate ASCII character:
 										Command_Words(intWord) = Chr$(34) + Chr$(9) + Chr$(34)
-								Case "\T"
-									'Replace the word with the appropriate ASCII character:
-										Command_Words(intWord) = Chr$(34) + Chr$(9) + Chr$(34)
 								Case "LINEBREAK"
-									'Replace the word with the appropriate ASCII character:
-										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(10) + Chr$(34)
-								Case "\R\N"
 									'Replace the word with the appropriate ASCII character:
 										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(10) + Chr$(34)
 								Case "NEWLINE"
 									'Replace the word with the appropriate ASCII character:
 										Command_Words(intWord) = Chr$(34) + Chr$(10) + Chr$(34)
-								Case "\N"
-									'Replace the word with the appropriate ASCII character:
-										Command_Words(intWord) = Chr$(34) + Chr$(10) + Chr$(34)
 								Case "CARRIAGERETURN"
-									'Replace the word with the appropriate ASCII character:
-										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(34)
-								Case "\R"
 									'Replace the word with the appropriate ASCII character:
 										Command_Words(intWord) = Chr$(34) + Chr$(13) + Chr$(34)
 								Case "QUOTE"
@@ -604,11 +592,13 @@ Sub Combine_Sub_Strings (Command_Words() As String)
 										'Remove blank words:
 											Remove_Blank_Words(Command_Words())
 									Else
-										Print, "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+										Print "--------------------------------------------------------------------------------"
+										Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
 										End
 									End If
 							Else
-								Print, "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+								Print "--------------------------------------------------------------------------------"
+								Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
 								End
 							End If
 					Else
@@ -650,7 +640,8 @@ Sub Validate_Command (Words() As String)
 						Case "DELETE"
 						Case "SURROUND"
 						Case Else
-							Print, "Error 0000: Unrecognised word " + Words(intWord)
+							Print "--------------------------------------------------------------------------------"
+							Print "Error: Unrecognised word " + Words(intWord)
 							End
 					End Select
 				End If
@@ -667,92 +658,126 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 	'PROCESSING:
 		Select Case UBound(Command_Words)
 			Case 0
-				Print, "Error 0000: Incomplete command " + Command_Words(0)
+				Print "--------------------------------------------------------------------------------"
+				Print "Error: Incomplete command " + Command_Words(0)
 				End
 			Case 1
+				'INCLUDE "path"
 				If Command_Words(0) = "INCLUDE" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "INCLUDE"
 					Temporary_Command.Path = Command_Words(1)
+				'APPEND "add"
 				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "APPEND"
 					Temporary_Command.Add = Command_Words(1)
+				'PREPEND "add"
 				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "PREPEND"
 					Temporary_Command.Add = Command_Words(1)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
 					End
 				End If
 			Case 2
-				Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+				Print "--------------------------------------------------------------------------------"
+				Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+				End
 			Case 3
-				'PREPEND "add" TO "find"
-				'APPEND "add" TO "find"
+				'REPLACE "find" WITH "add"
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
 						Temporary_Command.Operation = "REPLACE"
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(3)
 					Else
-						Print, "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+						Print "--------------------------------------------------------------------------------"
+						Print "Error: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 						End
 					End If
-				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "TO" And Substring(Command_Words(3)) = TRUE Then
-						Temporary_Command.Operation = "REPLACEONCE"
-						Temporary_Command.Find = Command_Words(1)
-						Temporary_Command.Add = Command_Words(1) & Command_Words(3)
+				'PREPEND "add" to "find"
 				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "TO" And Substring(Command_Words(3)) = TRUE Then
 						Temporary_Command.Operation = "REPLACEONCE"
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(3) & Command_Words(1)
+				'APPEND "add" TO "find"
+				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "TO" And Substring(Command_Words(3)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEONCE"
+						Temporary_Command.Find = Command_Words(1)
+						Temporary_Command.Add = Command_Words(1) & Command_Words(3)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
 					End
 				End If
 			Case 4
+				'REPLACE "find" WITH "add" ONCE
 				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "ONCE" Then
 					Temporary_Command.Operation = "REPLACEONCE"
 					Temporary_Command.Find = Command_Words(1)
 					Temporary_Command.Add = Command_Words(3)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
 					End
 				End If
 			Case 5
+				'DELTE ALL FROM "precedent" TO "antecedent"
 				If Command_Words(0) = "DELETE" And Command_Words(1) = "ALL" And Command_Words(2) = "FROM" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "TO" And Substring(Command_Words(5)) = TRUE Then
 						Temporary_Command.Operation = "REPLACEFROM"
 						Temporary_Command.Precedent = Command_Words(3)
 						Temporary_Command.Antecedent = Command_Words(5)
 						Temporary_Command.Add = ""
+				'DELETE ALL BETWEEN "precedent" AND "antecedent"
 				ElseIf Command_Words(0) = "DELETE" And Command_Words(1) = "ALL" And Command_Words(2) = "BETWEEN" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And Substring(Command_Words(5)) = TRUE Then
 						Temporary_Command.Operation = "REPLACEBETWEEN"
 						Temporary_Command.Precedent = Command_Words(3)
 						Temporary_Command.Antecedent = Command_Words(5)
 						Temporary_Command.Add = ""
+				'SURROUND "find" WITH "add" AND "add"
 				ElseIf Command_Words(0) = "SURROUND" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And Substring(Command_Words(5)) = TRUE Then
 					Temporary_Command.Operation = "REPLACEONCE"
 					Temporary_Command.Find = Command_Words(1)
 					Temporary_Command.Add = Command_Words(3) & Command_Words(1) & Command_Words(5)
+				'DELETE "find" BETWEEN "precedent" AND "antecedent"
+				ElseIf Command_Words(0) = "DELETE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "BETWEEN" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And SubString(Command_Words(5)) = TRUE Then
+						Temporary_Command.Operation = "REPLACEIFBETWEEN"
+						Temporary_Command.Find = Command_Words(1)
+						Temporary_Command.Add = ""
+						Temporary_Command.Precedent = Command_Words(3)
+						Temporary_Command.Antecedent = Command_Words(5)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
 					End
 				End If
 			Case 6
+				'REPLACE FIRST "find" AFTER "precedent" WITH "add"
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "AFTER" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
 					Temporary_Command.Operation = "REPLACESUBSEQUENT"
 					Temporary_Command.Find = Command_Words(2)
 					Temporary_Command.Add = Command_Words(6)
 					Temporary_Command.Precedent = Command_Words(4)
+				'DELETE "find" BETWEEN "precedent" AND "antecedent" ONCE
+				ElseIf Command_Words(0) = "DELETE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "BETWEEN" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And SubString(Command_Words(5)) = TRUE And Command_Words(6) = "ONCE" Then
+						Temporary_Command.Operation = "REPLACEIFBETWEENONCE"
+						Temporary_Command.Find = Command_Words(1)
+						Temporary_Command.Add = ""
+						Temporary_Command.Precedent = Command_Words(3)
+						Temporary_Command.Antecedent = Command_Words(5)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
 					End
 				End If
 			Case 7
+				'REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
 				If Command_Words(0) = "REPLACE" And Command_Words(1) = "ALL" And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "BETWEEN" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "AND" And Substring(Command_Words(7)) = TRUE Then
 					Temporary_Command.Operation = "REPLACEBETWEEN"
 					Temporary_Command.Add = Command_Words(3)
 					Temporary_Command.Precedent = Command_Words(5)
 					Temporary_Command.Antecedent = Command_Words(7)
+				'REPLACE "find" WITH "add" BETWEEN "precedent" and "antecedent"
 				ElseIf Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "BETWEEN" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "AND" And Substring(Command_Words(7)) = TRUE Then
 					If InStr(1, Interior_Characters(Command_Words(3)), Interior_Characters(Command_Words(1))) < 1 Then
 						Temporary_Command.Operation = "REPLACEIFBETWEEN"
@@ -761,20 +786,37 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Precedent = Command_Words(5)
 						Temporary_Command.Antecedent = Command_Words(7)
 					Else
-						Print, "Error 0000: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+						Print "--------------------------------------------------------------------------------"
+						Print "Error: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
 						End
 					End If
+				'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
 				ElseIf Command_Words(0) = "REPLACE" And Command_Words(1) = "ALL" And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "FROM" And Substring(Command_Words(5)) = TRUE And Command_Words(6) = "TO" And Substring(Command_Words(7)) = TRUE Then
 					Temporary_Command.Operation = "REPLACEFROM"
 					Temporary_Command.Add = Command_Words(3)
 					Temporary_Command.Precedent = Command_Words(5)
 					Temporary_Command.Antecedent = Command_Words(7)
 				Else
-					Print, "Error 0000: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+					End
+				End If
+			Case 8
+				'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE
+				If Command_Words(0) = "REPLACE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "WITH" And Substring(Command_Words(3)) = True And Command_Words(4) = "BETWEEN" And Substring(Command_Words(5)) = True And Command_Words(6) = "AND" And Substring(Command_Words(7)) = True And Command_Words(8) = "ONCE" Then
+					Temporary_Command.Operation = "REPLACEIFBETWEENONCE"
+					Temporary_Command.Find = Command_Words(1)
+					Temporary_Command.Add = Command_Words(3)
+					Temporary_Command.Precedent = Command_Words(5)
+					Temporary_Command.Antecedent = Command_Words(7)
+				Else
+					Print "--------------------------------------------------------------------------------"
+					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7) + " " + Command_Words(8)
 					End
 				End If
 			Case Else
-				Print, "Error 0000: Unrecognised Command"
+				Print "--------------------------------------------------------------------------------"
+				Print "Error: Unrecognised Command"
 				End
 		End Select
 End Sub
@@ -855,6 +897,8 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 				Text = Replace_Between(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEIFBETWEEN"
 				Text = Replace_If_Between(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+			Case "REPLACEIFBETWEENONCE"
+				Text = Replace_If_Between_Once(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 			Case "REPLACEFROM"
 				Text = Replace_From(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACESUBSEQUENT"

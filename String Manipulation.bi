@@ -5,10 +5,12 @@
 	'Purpose: A library of custom functions that transform strings.
 	'Author: Dustinian Camburides (dustinian@gmail.com)
 	'Platform: FreeBASIC (www.freebasic.net)
-	'Revision: 2.6
-	'Updated: 7/16/2015
+	'Revision: 2.7
+	'Updated: 7/24/2015
 '---------------------------------------------------------------------------------------------------
 'REVISION HISTORY'
+	'2.7: Added
+				'Added [Replace_If_Between_Once].
 	'2.6: Fixed
 				'Logic errors introduced with the speed fixes from 2.3.
 	'2.5: Fixed
@@ -84,6 +86,7 @@
 	Declare Function Replace_Between (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Substitute As String) As String
 	Declare Function Replace_Subsequent (ByVal Text As String, ByVal Precedent As String, ByVal Find As String, ByVal Substitute As String) As String
 	Declare Function Replace_If_Between (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Find As String, ByVal Substitute As String) As String
+	Declare Function Replace_If_Between_Once (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Find As String, ByVal Substitute As String) As String
 	Declare Function Between (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Start As Long = 1) As String
 	Declare Function Before (ByVal Text As String, ByVal Find As String, ByVal Start As Long = 1) As String
 	Declare Function After (ByVal Text As String, ByVal Find As String, ByVal Start As Long = 1) As String
@@ -282,6 +285,43 @@ Function Replace_If_Between (ByVal Text As String, ByVal Precedent As String, By
 			Wend
 	'OUTPUT:
 		Replace_If_Between = Text
+End Function
+
+Function Replace_If_Between_Once (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Find As String, ByVal Substitute As String) As String
+	'SUMMARY:
+		'[Replace_If_Between] Replaces all instances of the [Find] sub-string that appear between the [Precedent] and [Antecedent] sub-strings with the [Substitute] sub-string in the [Text] string.
+	'INPUT:
+		'Text: The input string; the text that's being manipulated.
+		'Precedent: The sub-string that denotes the start of the change within [Text].
+		'Antecedent: The sub-string that denotes the end of the change within [Text].
+		'Find: The specified sub-string; the string sought within the [Text] string.
+		'Substitute: The sub-string that's being added to the [Text] string.
+	'VARIABLES:
+		Dim lngStart As Long 'The location of the [Precedent] sub-string within the [Text] string.
+		Dim lngLocation As Long 'The address of the [Find] substring within the [Text] string.
+		Dim strSubString As String 'The text between the [Precedent] and [Antecedent] sub-strings within the [Text] string.
+	'INITIALIZE:
+		'Locate the [Precedent] string within the [Text] string:
+			lngStart = Instr(1, Text, Precedent)
+			If (lngStart > 0) Then lngLocation = Instr((lngStart + Len(Precedent)), Text, Antecedent)
+	'PROCESSING:
+		'While the [Precedent] appears in the [Text]...
+			While lngStart And lngLocation
+				'Extract the substring:
+					strSubString = Mid$(Text, (lngStart + Len(Precedent)), (lngLocation - (lngStart + Len(Precedent))))
+				'Replace the text within the substring:
+					strSubString = Replace_Once(strSubString, Find, Substitute)
+				'Insert the new substring into the text:
+					Text = Left$(Text, ((lngStart + Len(Precedent)) - 1)) + strSubString + Right$(Text, (Len(Text) + 1 - lngLocation))
+				'Increment the start point:
+					lngStart = lngStart + Len(Precedent) + Len(strSubString) + Len(Antecedent)
+				'Find the next instance:
+					lngStart = Instr(lngStart, Text, Precedent)
+					If (lngStart > 0) Then lngLocation = Instr((lngStart + Len(Precedent)), Text, Antecedent)
+		'Next instance of [Precedent]...
+			Wend
+	'OUTPUT:
+		Replace_If_Between_Once = Text
 End Function
 
 Function Between (ByVal Text As String, ByVal Precedent As String, ByVal Antecedent As String, ByVal Start As Long = 1) As String
