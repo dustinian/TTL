@@ -143,7 +143,7 @@ Sub Main
 		'Print splash screen:
 			Print
 			Print "================================================================================"
-			Print "Text Transformation Language (TTL) v2.6"
+			Print "Text Transformation Language (TTL) v2.7"
 			Print "--------------------------------------------------------------------------------"
 			Print "www.github.com/dustinian/ttl"
 		'If there are command-line arguments to process:
