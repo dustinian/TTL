@@ -29,7 +29,6 @@
 		'APPEND "add" TO "find"
 		'SURROUND "find" with "add" and "add"
 		'DELETE "find" BETWEEN "precedent" AND "antecedent"
-		'DELETE "find" BETWEEN "precedent" AND "antecedent" ONCE
 		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
@@ -758,13 +757,6 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Find = Command_Words(2)
 					Temporary_Command.Add = Command_Words(6)
 					Temporary_Command.Precedent = Command_Words(4)
-				'DELETE "find" BETWEEN "precedent" AND "antecedent" ONCE
-				ElseIf Command_Words(0) = "DELETE" And Substring(Command_Words(1)) = TRUE And Command_Words(2) = "BETWEEN" And Substring(Command_Words(3)) = TRUE And Command_Words(4) = "AND" And SubString(Command_Words(5)) = TRUE And Command_Words(6) = "ONCE" Then
-						Temporary_Command.Operation = "REPLACEIFBETWEENONCE"
-						Temporary_Command.Find = Command_Words(1)
-						Temporary_Command.Add = ""
-						Temporary_Command.Precedent = Command_Words(3)
-						Temporary_Command.Antecedent = Command_Words(5)
 				Else
 					Print "--------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)

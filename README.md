@@ -45,6 +45,13 @@ Use the below commands to transform your input text into your output text.
 	* Adds text to the beginning of the input file.
 * `APPEND "add"`
 	* Adds text to the end of the input file.
+* `DELETE ALL FROM "precedent" TO "antecedent"`
+* `DELETE ALL BETWEEN "precedent" AND "antecedent"`
+* `PREPEND "add" TO "find"`
+* `APPEND "add" TO "find"`
+* `SURROUND "find" with "add" and "add"`
+* `DELETE "find" BETWEEN "precedent" AND "antecedent"`
+* `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE`
 
 ###Modules
 
@@ -67,13 +74,9 @@ Use tokens to stand in for commonly-used CHRs, and to make your TTL more readabl
 Token | Chr
 ------|----
 TAB | 9
-\T | 9
 NEWLINE | 10
-\N | 10
 CARRIAGERETURN | 13
-\R | 13
 LINEBREAK | 13 + 10
-\R\N | 13 + 10
 QUOTE | 34
 
 * `REPLACE TAB WITH ", "`
