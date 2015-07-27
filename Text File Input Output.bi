@@ -1,13 +1,14 @@
-'---------------------------------------------------------------------------------------------------
-'TEXT FILE INPUT / OUTPUT
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'TEXT FILE INPUT / OUTPUT Copyright 2012-2015 Dustinian Camburides
+'--------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: A library of custom subroutines and functions to load text to/from a file.
-	'Author: Dustinian Camburides (dustinian@gmail.com)
+	'Author: Dustinian Camburides (dustinian@dustinian.com)
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Revision: 1.6
 	'Updated: 7/1/2015
-'---------------------------------------------------------------------------------------------------
+	'License: GNU GPL3
+'--------------------------------------------------------------------------------
 'REVISION HISTORY
 	'1.6: Updates
 			'Removed [List_Folder_Contents] since it's no longer used.
@@ -25,23 +26,28 @@
 			'[FreeFile] function (rather than defaulting all file streams to #1).
 			'[_FILEEXISTS] function (rather than error-trapping).
 	'1.0: First working version.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
-		'Add function to return all files in a folder (subfolders optional).
-		'Check to see If folders exist in [Output_File].
+		'Speed up [Input_File].
 	'Minor:
 		'None at this time.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'LICENSE (GNU GPL3)
+	'This file is part of Text Transformation Language.
+	'Text Transformation Language is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+	'Text Transformation Language is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	'You should have received a copy of the GNU General Public License along with Text Transformation Language.  If not, see <http://www.gnu.org/licenses/>.
+'--------------------------------------------------------------------------------
 'PROCEDURES
 	Declare Function Input_File (ByVal Path As String) As String
 	Declare Sub Output_File (ByVal Text As String, ByVal Path As String)
 	Declare Sub List_Folder_Contents (Files() as String, ByVal Path as String, ByVal Filter as String = "*")
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'INCLUDES
 	'Libraries:
 		#include "file.bi"
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 Function Input_File (ByVal Path As String) As String
 	'SUMMARY:
 		'[Input_File] returns the text of the file at the [Path] location.

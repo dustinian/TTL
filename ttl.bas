@@ -1,45 +1,51 @@
-'---------------------------------------------------------------------------------------------------
-'TEXT TRANSFORMATION LANGUAGE (TTL)
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'TEXT TRANSFORMATION LANGUAGE (TTL) Copyright 2012-2015 Dustinian Camburides
+'--------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
-	'Author: Dustinian Camburides (dustinian@gmail.com)
+	'Author: Dustinian Camburides (dustinian@dustinian.com)
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Git: www.github.com/dustinian/ttl
 	'Revision: 2.7
 	'Updated: 7/24/2015
-'---------------------------------------------------------------------------------------------------
+	'License: GNU GPL3
+'--------------------------------------------------------------------------------
 'INSTRUCTIONS
 	'1. Create a plain-text file of commands per the "syntax" section below.
 	'2. Run the TTL interpreter, identifying the script path and input path as command-line parameters.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'COMMAND SYNTAX
 	'Commands: Use the below commands to transform your input text into your output text.
-		'REPLACE "find" WITH "add"
-		'REPLACE "find" WITH "add" ONCE
-		'REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
-		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
-		'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
-		'REPLACE FIRST "find" AFTER "precedent" WITH "add"
-		'PREPEND "add"
-		'APPEND "add"
-		'DELETE ALL FROM "precedent" TO "antecedent"
-		'DELETE ALL BETWEEN "precedent" AND "antecedent"
-		'PREPEND "add" TO "find"
-		'APPEND "add" TO "find"
-		'SURROUND "find" with "add" and "add"
-		'DELETE "find" BETWEEN "precedent" AND "antecedent"
-		'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE
+		'Exact Text:
+			'REPLACE "find" WITH "add"
+			'REPLACE "find" WITH "add" ONCE
+			'PREPEND "add" TO "find"
+			'APPEND "add" TO "find"
+			'SURROUND "find" with "add" and "add"
+			'DELETE "find"
+		'Exact Text between Preceding and Anteceding Text:
+			'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"
+			'REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE
+			'DELETE "find" BETWEEN "precedent" AND "antecedent"
+		'Text based on Preceding and Anteceding Text:
+			'REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"
+			'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
+			'DELETE ALL FROM "precedent" TO "antecedent"
+			'DELETE ALL BETWEEN "precedent" AND "antecedent"
+		'Advanced:
+			'REPLACE FIRST "find" AFTER "precedent" WITH "add"
+			'PREPEND "add"
+			'APPEND "add"
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
 		'INCLUDE "c:\example_folder\example_file.ttl"
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'STRING SYNTAX
 	'CHR
 		'Use the "CHR()" operator to look for characters that you can't easily type into an ASCII TTL file.
 			'Example: Replace CHR(8) with CHR(9) 
 	'TOKENS
 		'Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable
-		'.________________.____________.
+		'.__________________.__________.
 		'|TOKEN				|	CHR	   |
 		'|------------------+----------|
 		'| TAB				|		 9 |
@@ -52,11 +58,13 @@
 	'CONCATENATION
 		'Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple substrings into a single string in a TTL command.
 			'Example: Replace "</P>" + NEWLINE + NEWLINE with "</P>" + NEWLINE
-'---------------------------------------------------------------------------------------------------
+	'QUOTATION MARKS
+		'Quotation marks tell TTL that everything inside the quotation is a sub-string. TTL does NOT parse text inside quotation marks for TTL Commands or Tokens.
+'--------------------------------------------------------------------------------
 'COMMAND-LINE PARAMETERS
 	'ttl.exe script_path.ttl input_path.txt
 	'ttl.exe script_path.ttl *.txt
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'REVISION HISTORY
 	'2.7: Added new commands.
 	'2.6: Updated the screen output.
@@ -76,7 +84,7 @@
 	'1.2: Added the ability to target any script to any file through a command-line parameter.
 	'1.1: Re-ordered and re-organized procedures For logical consistency.
 	'1.0: First working version.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
 		'Wildcards: Symbols For "wildcard" searches (*, #, etc.).
@@ -85,12 +93,18 @@
 		'Syntax Definitions: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 	'Minor:
 		'Debug Logs: The ability to log transformations in progress at different levels of detail.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'LICENSE (GNU GPL3)
+	'This file is part of Text Transformation Language.
+	'Text Transformation Language is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+	'Text Transformation Language is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	'You should have received a copy of the GNU General Public License along with Text Transformation Language.  If not, see <http://www.gnu.org/licenses/>.
+'--------------------------------------------------------------------------------
 'LIBRARIES
 	#Include "string array.bi"
 	#Include "string manipulation.bi"
 	#Include "text file input output.bi"
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'USER-DEFINED TYPES:
 	Type TTLCommand
 		Original as String * 255 'The original command as the user entered it.
@@ -101,7 +115,7 @@
 		Precedent As String * 255 'The sub-string that marks the beginning of an affected area in the main string.
 		Antecedent As String * 255 'The sub-string that marks the end of an affected area in the main string.
 	End Type
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'PROCEDURES:
 Declare Sub Main()
 	Declare Sub Parse_Script (Commands() As TTLCommand, Script_Path As String)
@@ -122,15 +136,15 @@ Declare Sub Main()
 	Declare Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 		Declare Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 			Declare Function Interior_Characters(ByVal Text As String) As String
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'GLOBAL CONSTANTS:
 	Const TRUE = -1 'Allows integers to be "TRUE" (compatibility with other BASIC dialects).
 	Const FALSE = 0 'Allows integers to be "FALSE" (compatibility with other BASIC dialects).
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'GLOBAL CODE:
 	Main()
 	End
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 Sub Main
 	'VARIABLES:
 		Dim udtCommands() As TTLCommand 'The dynamic array of [Commands] that will be assembled and executed.
@@ -669,6 +683,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 				ElseIf Command_Words(0) = "APPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "APPEND"
 					Temporary_Command.Add = Command_Words(1)
+				'DELETE "find"
+				ElseIf Command_Words(0) = "DELETE" And Substring(Command_Words(1)) = TRUE Then
+					Temporary_Command.Operation = "REPLACE"
+					Temporary_Command.Find = Command_Words(1)
+					Temporary_Command.Add = ""
 				'PREPEND "add"
 				ElseIf Command_Words(0) = "PREPEND" And Substring(Command_Words(1)) = TRUE Then
 					Temporary_Command.Operation = "PREPEND"

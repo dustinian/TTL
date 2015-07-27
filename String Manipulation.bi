@@ -1,13 +1,14 @@
-'---------------------------------------------------------------------------------------------------
-'STRING MANIPULATION
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'STRING MANIPULATION Copyright 2012-2015 Dustinian Camburides
+'--------------------------------------------------------------------------------
 'SUMMARY:
 	'Purpose: A library of custom functions that transform strings.
-	'Author: Dustinian Camburides (dustinian@gmail.com)
+	'Author: Dustinian Camburides (dustinian@dustinian.com)
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Revision: 2.7
 	'Updated: 7/24/2015
-'---------------------------------------------------------------------------------------------------
+	'License: GNU GPL3
+'--------------------------------------------------------------------------------
 'REVISION HISTORY'
 	'2.7: Added
 				'Added [Replace_If_Between_Once].
@@ -72,13 +73,19 @@
 				'Invalid output from [Between] function when [Find] did not appear.
 				'Invalid output from [Replace_Once] function when [Find] did not appear.
 	'1.0: First working version.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
-		'Fix infinite loop in [Replace] when [Substitute] appears in [Find].
+		'None at this time.
 	'Minor:
 		'None at this time.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'LICENSE (GNU GPL3)
+	'This file is part of Text Transformation Language.
+	'Text Transformation Language is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+	'Text Transformation Language is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	'You should have received a copy of the GNU General Public License along with Text Transformation Language.  If not, see <http://www.gnu.org/licenses/>.
+'--------------------------------------------------------------------------------
 'PROCEDURES
 	Declare Function Replace (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
 	Declare Function Replace_Once (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
@@ -91,7 +98,7 @@
 	Declare Function Before (ByVal Text As String, ByVal Find As String, ByVal Start As Long = 1) As String
 	Declare Function After (ByVal Text As String, ByVal Find As String, ByVal Start As Long = 1) As String
 	Declare Function Filter (ByVal Text As String, ByVal Allowed As String) As String
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 Function Replace (ByVal Text As String, ByVal Find As String, ByVal Substitute As String) As String
 	'SUMMARY:
 		'[Replace] replaces all instances of the [Find] sub-string with the [Substitute] sub-string within the [Text] string.

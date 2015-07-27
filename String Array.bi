@@ -1,28 +1,35 @@
-'---------------------------------------------------------------------------------------------------
-'STRING ARRAY
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'STRING ARRAY Copyright 2012-2015 Dustinian Camburides
+'--------------------------------------------------------------------------------
 'SUMMARY
 	'Purpose: A library of custom subroutines to create and manipulate a dnynamic array of strings.
-	'Author: Dustinian Camburides (dustinian@gmail.com)
+	'Author: Dustinian Camburides (dustinian@dustinian.com)
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Revision: 1.1
 	'Updated: 4/15/2013
-'---------------------------------------------------------------------------------------------------
+	'License: GNU GPL3
+'--------------------------------------------------------------------------------
 'REVISION HISTORY
 	'1.1: Migrated from QB64 (www.qb64.net) to FreeBASIC (www.freebasic.net).
 	'1.0: First working version.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 'PLANNED ENHNACEMENTS
 	'Major:
 		'None at this time.
 	'Minor:
 		'None at this time.
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
+'LICENSE (GNU GPL3)
+	'This file is part of Text Transformation Language.
+	'Text Transformation Language is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+	'Text Transformation Language is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+	'You should have received a copy of the GNU General Public License along with Text Transformation Language.  If not, see <http://www.gnu.org/licenses/>.
+'--------------------------------------------------------------------------------
 'PROCEDURES
 	Declare Sub Separate_Lines (Words() As String, ByVal Text As String, ByVal Separator As String)
 	Declare Sub Remove_Word(Words() As String, ByVal Index As Integer)
 	Declare Sub Remove_Blank_Words (Words() As String)
-'---------------------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------
 Sub Remove_Word(Words() As String, ByVal Index As Integer)
 	'SUMMARY:
 		'[Remove_Word] removes a word from a dynamic array of strings.
