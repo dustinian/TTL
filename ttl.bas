@@ -7,7 +7,7 @@
 	'Platform: FreeBASIC (www.freebasic.net)
 	'Git: www.github.com/dustinian/ttl
 	'Revision: 2.7
-	'Updated: 7/24/2015
+	'Updated: 7/29/2015
 	'License: GNU GPL3
 '--------------------------------------------------------------------------------
 'INSTRUCTIONS
@@ -155,24 +155,26 @@ Sub Main
 	'PROCESSING:
 		'Print splash screen:
 			Print
-			Print "================================================================================"
+			Print "==============================================================================="
 			Print "Text Transformation Language (TTL) v2.7"
-			Print "--------------------------------------------------------------------------------"
+			Print "-------------------------------------------------------------------------------"
 			Print "www.github.com/dustinian/ttl"
+			Print "-------------------------------------------------------------------------------"
+			Print "Started at: " & Date & " " & Time
+			Print "==============================================================================="
 		'If there are command-line arguments to process:
 			If Command$ <> "" Then
 				'If the command-line arguments are not blank:
 					If Command$(1) <> "" And Command$(2) <> "" Then
 						'Parse the script:
-							Print "PARSING " & Command$(1)
+							Print "PARSING SCRIPT " & Command$(1)
 							Parse_Script(udtCommands(), Command$(1))
 						'Initialize:
 							intInputFile = 2
 						'While there is a command-line argument (file name) to process...
 							While Command$(intInputFile) <> ""
 								'Load the input text:
-									Print "--------------------------------------------------------------------------------"
-									Print Date & " " & Time
+									Print "-------------------------------------------------------------------------------"
 									Print "LOADING " & Command$(intInputFile)
 									strInputText = Input_File(Command$(intInputFile))
 								'Execute the script:
@@ -181,19 +183,23 @@ Sub Main
 								'Output the output text:
 									Print "OUTPUTTING " & Command$(intInputFile)
 									Output_File(strInputText, Command$(intInputFile))
-									Print Date & " " & Time
 								'Increment the command-line argument:
 									intInputFile = intInputFile + 1
 							Wend
+							Print "-------------------------------------------------------------------------------"
+							Print "Finished at: " & Date & " " & Time
+							Print "==============================================================================="
 					Else
-						Print "--------------------------------------------------------------------------------"
+						Print "-------------------------------------------------------------------------------"
 						Print "Error: Cannot parse command-line arguments."
 						Print "Example: ttl.exe script.ttl target.txt"
+						Print "==============================================================================="
 					End If
 			Else
-				Print "--------------------------------------------------------------------------------"
+				Print "-------------------------------------------------------------------------------"
 				Print "Use command-line parameters to identify the script and target."
 				Print "Example: ttl.exe script.ttl target.txt"
+				Print "==============================================================================="
 			End If
 	Print
 End Sub
@@ -528,13 +534,15 @@ Sub Transform_CHR (Command_Words() As String)
 												'Replace the word with the appropriate ASCII character:
 													Command_Words(intWord) = Chr$(34) + Chr$(intCharacter) + Chr$(34)
 											Else
-												Print "--------------------------------------------------------------------------------"
+												Print "-------------------------------------------------------------------------------"
 												Print "Syntax Error 0001: The CHR() number is out of range."
+												Print "==============================================================================="
 												End
 											End If
 									Else
-										Print "--------------------------------------------------------------------------------"
+										Print "-------------------------------------------------------------------------------"
 										Print "Syntax Error: The CHR() command is not correctly formatted."
+										Print "==============================================================================="
 										End
 									End If
 							End If
@@ -605,13 +613,15 @@ Sub Combine_Sub_Strings (Command_Words() As String)
 										'Remove blank words:
 											Remove_Blank_Words(Command_Words())
 									Else
-										Print "--------------------------------------------------------------------------------"
+										Print "-------------------------------------------------------------------------------"
 										Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+										Print "==============================================================================="
 										End
 									End If
 							Else
-								Print "--------------------------------------------------------------------------------"
+								Print "-------------------------------------------------------------------------------"
 								Print "Syntax Error: " + Command_Words(intWord) + " should be used to join strings."
+								Print "==============================================================================="
 								End
 							End If
 					Else
@@ -653,8 +663,9 @@ Sub Validate_Command (Words() As String)
 						Case "DELETE"
 						Case "SURROUND"
 						Case Else
-							Print "--------------------------------------------------------------------------------"
+							Print "-------------------------------------------------------------------------------"
 							Print "Error: Unrecognised word " + Words(intWord)
+							Print "==============================================================================="
 							End
 					End Select
 				End If
@@ -671,8 +682,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 	'PROCESSING:
 		Select Case UBound(Command_Words)
 			Case 0
-				Print "--------------------------------------------------------------------------------"
+				Print "-------------------------------------------------------------------------------"
 				Print "Error: Incomplete command " + Command_Words(0)
+				Print "==============================================================================="
 				End
 			Case 1
 				'INCLUDE "path"
@@ -693,13 +705,15 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Operation = "PREPEND"
 					Temporary_Command.Add = Command_Words(1)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1)
+					Print "==============================================================================="
 					End
 				End If
 			Case 2
-				Print "--------------------------------------------------------------------------------"
+				Print "-------------------------------------------------------------------------------"
 				Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2)
+				Print "==============================================================================="
 				End
 			Case 3
 				'REPLACE "find" WITH "add"
@@ -709,8 +723,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(3)
 					Else
-						Print "--------------------------------------------------------------------------------"
+						Print "-------------------------------------------------------------------------------"
 						Print "Error: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+						Print "==============================================================================="
 						End
 					End If
 				'PREPEND "add" to "find"
@@ -724,8 +739,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Find = Command_Words(1)
 						Temporary_Command.Add = Command_Words(1) & Command_Words(3)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3)
+					Print "==============================================================================="
 					End
 				End If
 			Case 4
@@ -735,8 +751,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Find = Command_Words(1)
 					Temporary_Command.Add = Command_Words(3)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4)
+					Print "==============================================================================="
 					End
 				End If
 			Case 5
@@ -765,8 +782,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Precedent = Command_Words(3)
 						Temporary_Command.Antecedent = Command_Words(5)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5)
+					Print "==============================================================================="
 					End
 				End If
 			Case 6
@@ -777,8 +795,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Add = Command_Words(6)
 					Temporary_Command.Precedent = Command_Words(4)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
+					Print "==============================================================================="
 					End
 				End If
 			Case 7
@@ -797,8 +816,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 						Temporary_Command.Precedent = Command_Words(5)
 						Temporary_Command.Antecedent = Command_Words(7)
 					Else
-						Print "--------------------------------------------------------------------------------"
+						Print "-------------------------------------------------------------------------------"
 						Print "Error: [Add] sub-string contains [Find] substring: " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+						Print "==============================================================================="
 						End
 					End If
 				'REPLACE ALL WITH "add" FROM "precedent" TO "antecedent"
@@ -808,8 +828,9 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Precedent = Command_Words(5)
 					Temporary_Command.Antecedent = Command_Words(7)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7)
+					Print "==============================================================================="
 					End
 				End If
 			Case 8
@@ -821,13 +842,15 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Precedent = Command_Words(5)
 					Temporary_Command.Antecedent = Command_Words(7)
 				Else
-					Print "--------------------------------------------------------------------------------"
+					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6) + " " + Command_Words(7) + " " + Command_Words(8)
+					Print "==============================================================================="
 					End
 				End If
 			Case Else
-				Print "--------------------------------------------------------------------------------"
+				Print "-------------------------------------------------------------------------------"
 				Print "Error: Unrecognised Command"
+				Print "==============================================================================="
 				End
 		End Select
 End Sub
@@ -883,7 +906,7 @@ Function Execute_Script (Commands() As TTLCommand, Text As String) As String
 		'For each [command]...
 			For intCommand = LBound(Commands) TO UBound(Commands)
 				'Output what you're doing:
-					Print "  " & Time & ": " & Trim$((Left$(Commands(intCommand).Original, 68)))
+					Print "  " & Time & ": " & Trim$((Left$(Commands(intCommand).Original, 67)))
 				'Execute the command:
 					Execute_Command(Commands(intCommand), Text)
 		'Next [command]...
