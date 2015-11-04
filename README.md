@@ -146,6 +146,9 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 ###Minor
 
 * **Debug Logs**: The ability to log transformations in progress at different levels of detail.
+* **Backwards Precedent/Antecedent Recognition**: The ability for TTL to move through text backwards (InstrRev) so that it could, for example, find matched tag pairs in a markup language.
+* **Expand Delete Functionality**: Expand a "Delete" option to more existing commands.
+* **REPLACE FROM Precedent TO Antecedent IF BETWEEN Precedent AND Antecedent**: A new commend.
 
 ##Sample Files
 
