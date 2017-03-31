@@ -20,18 +20,13 @@ Delete=
 [TabOrder]
 TabOrder=1,2,3,4
 [File]
-1=Text File Input Output.bi
-2=ttl.bas
-3=String Array.bi
-4=String Manipulation.bi
-Main=2
+1=ttl.bas
+2=string_array.bi
+3=string_manipulation.bi
+4=text_file_input_output.bi
+Main=1
 [BreakPoint]
 1=
 2=
 3=
 4=
-[FileInfo]
-1=0,61,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-2=0,180,1,-121634817,-1,139263,0,0,0,0,0,0,0,0,0,0,0,0,0
-3=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-4=0,232,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

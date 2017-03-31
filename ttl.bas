@@ -34,6 +34,7 @@
 			'DELETE ALL BETWEEN "precedent" AND "antecedent"
 		'Advanced:
 			'REPLACE FIRST "find" AFTER "precedent" WITH "add"
+			'REPLACE FIRST "find" BEFORE "antecedent" WITH "add"
 			'PREPEND "add"
 			'APPEND "add"
 	'Modules: Use the below command to include a separate file of TTL commands into your current script.
@@ -66,6 +67,7 @@
 	'ttl.exe script_path.ttl *.txt
 '--------------------------------------------------------------------------------
 'REVISION HISTORY
+	'2.8: Added [Replace_Before] command.
 	'2.7: Added new commands.
 	'2.6: Updated the screen output.
 	'2.5: Added "APPEND" and "PREPEND" commands to add text at the end or beginning of the input file!
@@ -101,9 +103,9 @@
 	'You should have received a copy of the GNU General Public License along with Text Transformation Language.  If not, see <http://www.gnu.org/licenses/>.
 '--------------------------------------------------------------------------------
 'LIBRARIES
-	#Include "string array.bi"
-	#Include "string manipulation.bi"
-	#Include "text file input output.bi"
+	#Include "string_array.bi"
+	#Include "string_manipulation.bi"
+	#Include "text_file_input_output.bi"
 '--------------------------------------------------------------------------------
 'USER-DEFINED TYPES:
 	Type TTLCommand
@@ -138,8 +140,8 @@ Declare Sub Main()
 			Declare Function Interior_Characters(ByVal Text As String) As String
 '--------------------------------------------------------------------------------
 'GLOBAL CONSTANTS:
-	Const TRUE = -1 'Allows integers to be "TRUE" (compatibility with other BASIC dialects).
-	Const FALSE = 0 'Allows integers to be "FALSE" (compatibility with other BASIC dialects).
+	'Const TRUE = -1 'Allows integers to be "TRUE" (compatibility with other BASIC dialects).
+	'Const FALSE = 0 'Allows integers to be "FALSE" (compatibility with other BASIC dialects).
 '--------------------------------------------------------------------------------
 'GLOBAL CODE:
 	Main()
@@ -794,6 +796,11 @@ Sub Populate_Command (Command_Words() As String, Temporary_Command As TTLCommand
 					Temporary_Command.Find = Command_Words(2)
 					Temporary_Command.Add = Command_Words(6)
 					Temporary_Command.Precedent = Command_Words(4)
+				ElseIf Command_Words(0) = "REPLACE" And Command_Words(1) = "FIRST" And Substring(Command_Words(2)) = TRUE And Command_Words(3) = "BEFORE" And Substring(Command_Words(4)) = TRUE And Command_Words(5) = "WITH" And Substring(Command_Words(6)) = TRUE Then
+					Temporary_Command.Operation = "REPLACEPREVIOUS"
+					Temporary_Command.Find = Command_Words(2)
+					Temporary_Command.Add = Command_Words(6)
+					Temporary_Command.Antecedent = Command_Words(4)
 				Else
 					Print "-------------------------------------------------------------------------------"
 					Print "Error: Unrecognised Command " + Command_Words(0) + " " + Command_Words(1) + " " + Command_Words(2) + " " + Command_Words(3) + " " + Command_Words(4) + " " + Command_Words(5) + " " + Command_Words(6)
@@ -937,6 +944,8 @@ Sub Execute_Command (TTLCommand As TTLCommand, Text As String)
 				Text = Replace_From(Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Add))
 			Case "REPLACESUBSEQUENT"
 				Text = Replace_Subsequent (Text, Interior_Characters(TTLCommand.Precedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
+			Case "REPLACEPREVIOUS"
+				Text = Replace_Previous (Text, Interior_Characters(TTLCommand.Antecedent), Interior_Characters(TTLCommand.Find), Interior_Characters(TTLCommand.Add))
 			Case "PREPEND"
 				Text = Interior_Characters(TTLCommand.Add) + Text
 			Case "APPEND"
