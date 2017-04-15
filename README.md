@@ -1,8 +1,8 @@
-﻿#Text Transformation Language
+﻿# Text Transformation Language
 
 Copyright 2012-2015 Dustinian Camburides
 
-##Summary
+## Summary
 
 * **Purpose**: Text Transformation Language is a scripting language that uses interpreted commands to transform text files.
 * **Author**: Dustinian Camburides
@@ -10,23 +10,23 @@ Copyright 2012-2015 Dustinian Camburides
 * **Revision**: 2.7
 * **Updated**: 7/24/2015
 
-##Downloads
+## Downloads
 
 * **Compiled Interpreter**: [.EXE](http://www.dustinian.com/_downloads/ttl.exe)
 * **Source Code**: [.ZIP](http://www.dustinian.com/_downloads/text_transformation_language.zip)
 	* Compile with the following command line: `fbc -lang fb -s console "ttl.bas"`
 
-##Interact
+## Interact
 
 * Collaborate: [GitHub](https://github.com/dustinian/ttl)
 * Report a bug: [Issues](https://github.com/dustinian/ttl/issues)
 * Comment: [Freebasic.net](http://www.freebasic.net/forum/viewtopic.php?f=8&t=21197)
 
-##Commands
+## Commands
 
 Use the below commands to transform your input text into your output text.
 
-###Exact Text:
+### Exact Text:
 
 * `REPLACE "find" WITH "add"`
 	* Replaces every instance of "find" with "add." This function is **recursive** (it will keep finding "find" over and over again until "find" is gone). Therefore, this function will throw an error if "add" contains "find," because this command would never finish.
@@ -38,7 +38,7 @@ Use the below commands to transform your input text into your output text.
 * `SURROUND "find" with "add" and "add"`
 * `DELETE "find"`
 
-###Exact Text between Preceding and Anteceding Text
+### Exact Text between Preceding and Anteceding Text
 
 * `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent"`
 	* This replaces "find" with "add," but only when "find" appears between "precedent" and "antecedent." In other words, if you wanted to replace all the NEWLINEs with spaces but only inside of a table cell, you might say:
@@ -46,7 +46,7 @@ Use the below commands to transform your input text into your output text.
 * `REPLACE "find" WITH "add" BETWEEN "precedent" AND "antecedent" ONCE`
 * `DELETE "find" BETWEEN "precedent" AND "antecedent"`
 
-###Text based on Preceding and Anteceding Text
+### Text based on Preceding and Anteceding Text
 
 * `REPLACE ALL WITH "add" BETWEEN "precedent" AND "antecedent"`
 	* This replaces everything between the "precedent" and the "antecedent," but **excludes** the "precedent" and "antecedent" from the replacement. In other words, after the operation is complete, you would see the "precedent," the "add," and the "antecedent."
@@ -55,7 +55,7 @@ Use the below commands to transform your input text into your output text.
 * `DELETE ALL FROM "precedent" TO "antecedent"`
 * `DELETE ALL BETWEEN "precedent" AND "antecedent"`
 
-###Advanced
+### Advanced
 
 * `REPLACE FIRST "find" AFTER "precedent" WITH "add"`
 	* This replaces only the first instance of "find" after the "precedent" with "add." Example: You run an operation to replace some of your p tags with h2 tags in an HTML document. You'd naturally want to replace some of the /p tags with /h2 tags... but how can you target only those /p tags that follow an h2 tag? This operation does that.
@@ -64,21 +64,21 @@ Use the below commands to transform your input text into your output text.
 * `APPEND "add"`
 	* Adds text to the end of the input file.
 
-###Modules
+### Modules
 
 Use the below command to include a separate file of TTL commands into your current script.
 
 * `INCLUDE "c:\example_folder\example_file.ttl"`
 
-##ASCII
+## ASCII
 
-###Chr
+### Chr
 
 Use the "CHR()" operator to look for characters that you can't easily type into an ASCII TTL file.
 
 * `REPLACE CHR(8) WITH CHR(9)`
 
-###Tokens
+### Tokens
 
 Use tokens to stand in for commonly-used CHRs, and to make your TTL more readable. Tokens must appear OUTSIDE quotation marks to be interpreted correctly.
 
@@ -92,29 +92,29 @@ QUOTE | 34
 
 * `REPLACE TAB WITH ", "`
 
-###Concatenation
+### Concatenation
 
 Use the "+" or the "&" characters (no difference in functionality) to concatenate multiple sub-strings into a single string in a TTL command.
 
 * `REPLACE "</p>" & NEWLINE & NEWLINE WITH "</p>" + NEWLINE`
 
-###Quotation Marks
+### Quotation Marks
 
 Quotation marks tell TTL that everything inside the quotation is a sub-string. TTL does NOT parse text inside quotation marks for TTL Commands or Tokens.
 
-##Instructions
+## Instructions
 
 1. Using the syntax above, enter your commands into a plain-text file.
 2. Run ttl.exe; use the command-line parameters to tell the interpreter where to find:
 	* The command file
 	* The input file(s)
 
-##Sample Command-Lines
+## Sample Command-Lines
 
 * Transform Single File: `ttl.exe script_path.ttl input_path.txt`
 * Transform Multiple Files: `ttl.exe script_path.ttl *.xml`
 
-##Revision History
+## Revision History
 
 * **2.7**: Added new commands.
 * **2.6**: Updated the screen output.
@@ -135,28 +135,28 @@ Quotation marks tell TTL that everything inside the quotation is a sub-string. T
 * **1.1**: Re-ordered and re-organized procedures For logical consistency.
 * **1.0**: First working version.
 
-##Planned Enhancements
+## Planned Enhancements
 
-###Major
-* **Wild Cards**: Symbols For "wild card" searches (*, #, etc.).
+### Major
+* **Wild Cards**: Symbols For "wild card" searches (*, # , etc.).
 * **Text User-Interface (TUI)**: A user interface assembled from ASCII characters (similar to the QB IDE).
 * **Graphical User-Interface (GUI)**: A windows-style user interface (buttons, menus, scroll bars, etc.).
 * **Syntax Definitions**: A more elegant way to validate/recognize command syntax (DTD file, XML definitions, etc.).
 
-###Minor
+### Minor
 
 * **Debug Logs**: The ability to log transformations in progress at different levels of detail.
 * **Backwards Precedent/Antecedent Recognition**: The ability for TTL to move through text backwards (InstrRev) so that it could, for example, find matched tag pairs in a markup language.
 * **Expand Delete Functionality**: Expand a "Delete" option to more existing commands.
 * **REPLACE FROM Precedent TO Antecedent IF BETWEEN Precedent AND Antecedent**: A new commend.
 
-##Sample Files
+## Sample Files
 
 * **Script**: [eyrie_script.ttl](http://www.dustinian.com/_downloads/eyrie_script.ttl), written to convert Gryphon's stories at Eyrie Productions, Unlimited.
 * **Input**: [eyrie_input.txt](http://www.dustinian.com/_downloads/eyrie_input.txt), part I of "The Fulcrum of Fate" by Gryphon.
 * **Command Line**: ttl.exe eyrie_script.ttl eyrie_input.txt
 
-##License (GNU GPL3)
+## License (GNU GPL3)
 
 This file is part of Text Transformation Language.
 
